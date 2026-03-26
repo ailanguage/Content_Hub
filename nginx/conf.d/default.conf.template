@@ -10,10 +10,30 @@ upstream task_creator_upstream {
     server task-creator:3003;
 }
 
+# ── Redirect www → root domain ──
+server {
+    listen 80;
+    server_name www.${DOMAIN};
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+    location / {
+        return 301 https://${DOMAIN}$request_uri;
+    }
+}
+
+server {
+    listen 443 ssl http2;
+    server_name www.${DOMAIN};
+    ssl_certificate     /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
+    return 301 https://${DOMAIN}$request_uri;
+}
+
 # ── HTTP → HTTPS redirect ──
 server {
     listen 80;
-    server_name _;
+    server_name ${DOMAIN};
 
     # Certbot ACME challenge
     location /.well-known/acme-challenge/ {
@@ -28,10 +48,10 @@ server {
 # ── HTTPS ──
 server {
     listen 443 ssl http2;
-    server_name _;
+    server_name ${DOMAIN};
 
-    ssl_certificate     /etc/letsencrypt/live/DOMAIN_PLACEHOLDER/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/DOMAIN_PLACEHOLDER/privkey.pem;
+    ssl_certificate     /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
     ssl_protocols       TLSv1.2 TLSv1.3;
     ssl_ciphers         HIGH:!aNULL:!MD5;
     ssl_prefer_server_ciphers on;

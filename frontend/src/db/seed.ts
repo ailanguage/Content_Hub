@@ -11,6 +11,10 @@ async function seed() {
     throw new Error("DATABASE_URL is required");
   }
 
+  const DOMAIN = process.env.DOMAIN || process.env.NEXT_PUBLIC_APP_URL?.replace(/^https?:\/\//, "") || "localhost";
+  const ADMIN_EMAIL = `admin@${DOMAIN}`;
+  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || generatePassword();
+
   const sql = postgres(DATABASE_URL);
   const db = drizzle(sql);
 
@@ -23,18 +27,18 @@ async function seed() {
   const [existingAdmin] = await db
     .select({ id: users.id })
     .from(users)
-    .where(eq(users.email, "admin@creatorhub.local"))
+    .where(eq(users.role, "admin"))
     .limit(1);
 
   if (existingAdmin) {
-    console.log("  Already exists, skipping");
+    console.log("  Admin already exists, skipping");
   } else {
     const [admin] = await db
       .insert(users)
       .values({
-        email: "admin@creatorhub.local",
+        email: ADMIN_EMAIL,
         username: "admin",
-        passwordHash: hashSync("admin123", 12),
+        passwordHash: hashSync(ADMIN_PASSWORD, 12),
         role: "admin",
         status: "verified",
         displayName: "System Admin",
@@ -42,12 +46,18 @@ async function seed() {
         currency: "usd",
       })
       .returning();
-    console.log(`  Created: ${admin.email} (password: admin123)`);
+    console.log(`  Created: ${admin.email}`);
+    console.log(`  Password: ${ADMIN_PASSWORD}`);
+    console.log(`  ⚠ Save this password — it will not be shown again.`);
   }
 
   console.log("\nSeed completed successfully!");
-  console.log("\n--- Login credentials ---");
-  console.log("Admin: admin@creatorhub.local / admin123");
+}
+
+function generatePassword(): string {
+  const chars = "abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789!@#$%&*";
+  const bytes = require("crypto").randomBytes(20);
+  return Array.from(bytes).map((b: number) => chars[b % chars.length]).join("");
 }
 
 seed().catch((err) => {

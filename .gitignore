@@ -10,6 +10,13 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
+.env.enc
+
+# Generated nginx config (from template)
+nginx/conf.d/default.conf
+
+# Deploy marker
+.seed_completed
 
 # IDE files
 .vscode/
