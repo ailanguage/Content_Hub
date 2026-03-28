@@ -58,6 +58,11 @@ server {
     add_header X-XSS-Protection "1; mode=block" always;
     add_header Strict-Transport-Security "max-age=63072000" always;
 
+    location = /robots.txt {
+        return 200 "User-agent: *\nDisallow: /\n";
+        add_header Content-Type text/plain;
+    }
+
     location / {
         proxy_pass http://portainer_upstream;
         proxy_set_header Host $host;
