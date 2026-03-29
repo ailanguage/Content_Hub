@@ -98,8 +98,8 @@ function MyAccountSection() {
         <div className="border-t border-discord-bg-darker/60 divide-y divide-discord-bg-darker/40">
           {[
             { label: t("displayName"), value: user.displayName || "—" },
-            { label: "Username", value: user.username },
-            { label: "Email", value: user.email },
+            { label: t("username"), value: user.username },
+            { label: t("emailLabel"), value: user.email },
             { label: t("currency"), value: currencyLabel },
           ].map(({ label, value }) => (
             <div key={label} className="px-6 py-4">
@@ -716,7 +716,7 @@ function AdminUsersSection() {
       )}
 
       {filteredUsers.length === 0 && (
-        <p className="text-sm text-discord-text-muted text-center py-8">No users match your search.</p>
+        <p className="text-sm text-discord-text-muted text-center py-8">{ta("noUsersMatch")}</p>
       )}
 
       <div className="space-y-2">
@@ -757,8 +757,8 @@ function AdminUsersSection() {
                   </div>
                   <div className="text-xs text-discord-text-muted flex items-center gap-3 flex-wrap">
                     <span>{u.email}</span>
-                    {u.currency && <span>Currency: {u.currency.toUpperCase()}</span>}
-                    <span>Joined {new Date(u.createdAt).toLocaleDateString()}</span>
+                    {u.currency && <span>{ta("currencyLabel", { currency: u.currency.toUpperCase() })}</span>}
+                    <span>{ta("joined", { date: new Date(u.createdAt).toLocaleDateString() })}</span>
                   </div>
                   {u.tags.length > 0 && (
                     <div className="flex gap-1.5 mt-2 flex-wrap">
@@ -774,7 +774,7 @@ function AdminUsersSection() {
                               onClick={() => handleTagAction(u.id, "DELETE", tag.id)}
                               disabled={isLoading}
                               className="ml-0.5 opacity-60 hover:opacity-100 leading-none font-bold disabled:cursor-not-allowed"
-                              title="Remove tag"
+                              title={ta("removeTag")}
                             >×</button>
                           )}
                         </span>
@@ -789,7 +789,7 @@ function AdminUsersSection() {
                   disabled={isLoading}
                   className={`text-sm px-4 py-1.5 rounded-md font-semibold transition-all shrink-0 ${isOpen ? "bg-discord-accent text-white shadow hover:bg-indigo-500" : "bg-discord-bg-hover text-discord-text-muted hover:text-discord-text border border-discord-border hover:border-discord-text-muted"} disabled:opacity-50`}
                 >
-                  {isOpen ? "Done" : "Actions"}
+                  {isOpen ? ta("done") : ta("actions")}
                 </button>
               </div>
 
@@ -799,7 +799,7 @@ function AdminUsersSection() {
                   <div className="flex flex-wrap items-end gap-4">
                     {/* Role */}
                     <div>
-                      <label className="block text-xs font-semibold uppercase tracking-wider text-discord-text-muted mb-2">Change Role</label>
+                      <label className="block text-xs font-semibold uppercase tracking-wider text-discord-text-muted mb-2">{ta("changeRole")}</label>
                       <div className="flex gap-2 flex-wrap">
                         {(["creator", "supercreator", "mod", "supermod", "admin"] as const).map((role) => (
                           <button
@@ -824,7 +824,7 @@ function AdminUsersSection() {
                     {/* Add Tag */}
                     {available.length > 0 && (
                       <div>
-                        <label className="block text-xs font-semibold uppercase tracking-wider text-discord-text-muted mb-2">Add Tag</label>
+                        <label className="block text-xs font-semibold uppercase tracking-wider text-discord-text-muted mb-2">{ta("addTag")}</label>
                         <select
                           defaultValue=""
                           disabled={isLoading}
@@ -835,7 +835,7 @@ function AdminUsersSection() {
                           }}
                           className="text-sm px-3 py-2 bg-discord-bg rounded-md border border-discord-border text-discord-text focus:outline-none focus:ring-2 focus:ring-discord-accent disabled:opacity-50"
                         >
-                          <option value="" disabled>Select tag to add…</option>
+                          <option value="" disabled>{ta("selectTagToAdd")}</option>
                           {available.map((t) => (
                             <option key={t.id} value={t.id}>{t.name}</option>
                           ))}
@@ -887,6 +887,7 @@ interface InviteCode {
 }
 
 function AdminInvitesSection() {
+  const ta = useTranslations("admin");
   const [codes, setCodes] = useState<InviteCode[]>([]);
   const [loading, setLoading] = useState(true);
   const [maxUses, setMaxUses] = useState(1);
@@ -919,18 +920,18 @@ function AdminInvitesSection() {
     fetchCodes();
   };
 
-  if (loading) return <div className="text-discord-text-muted text-sm">Loading invite codes...</div>;
+  if (loading) return <div className="text-discord-text-muted text-sm">{ta("loadingInviteCodes")}</div>;
 
   return (
     <div className="max-w-2xl">
-      <SectionTitle>Invite Codes</SectionTitle>
+      <SectionTitle>{ta("inviteCodes")}</SectionTitle>
 
       {/* Create form */}
       <div className="bg-discord-bg-dark rounded-xl p-5 mb-6 border border-discord-bg-darker/60">
-        <h3 className="text-sm font-semibold text-discord-text mb-4">Generate New Code</h3>
+        <h3 className="text-sm font-semibold text-discord-text mb-4">{ta("generateNewCode")}</h3>
         <div className="flex items-end gap-4 flex-wrap">
           <div>
-            <label className="block text-xs font-medium text-discord-text-muted mb-1.5">Max Uses</label>
+            <label className="block text-xs font-medium text-discord-text-muted mb-1.5">{ta("maxUses")}</label>
             <input
               type="number" min={1} max={100} value={maxUses}
               onChange={(e) => setMaxUses(parseInt(e.target.value) || 1)}
@@ -938,7 +939,7 @@ function AdminInvitesSection() {
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-discord-text-muted mb-1.5">Expires In (days)</label>
+            <label className="block text-xs font-medium text-discord-text-muted mb-1.5">{ta("expiresInDays")}</label>
             <input
               type="number" min={1} max={365} value={expiresInDays}
               onChange={(e) => setExpiresInDays(parseInt(e.target.value) || 30)}
@@ -949,14 +950,14 @@ function AdminInvitesSection() {
             onClick={handleCreate} disabled={creating}
             className="px-5 py-2 bg-discord-accent hover:bg-discord-accent-hover text-white text-sm font-semibold rounded-md transition-colors disabled:opacity-50 flex items-center gap-1"
           >
-            <ButtonSpinner loading={creating}>Generate</ButtonSpinner>
+            <ButtonSpinner loading={creating}>{ta("generate")}</ButtonSpinner>
           </button>
         </div>
       </div>
 
       {/* Code list */}
       <div className="space-y-2">
-        {codes.length === 0 && <p className="text-sm text-discord-text-muted">No invite codes yet. Generate one above.</p>}
+        {codes.length === 0 && <p className="text-sm text-discord-text-muted">{ta("noInviteCodesYet")}</p>}
         {codes.map((c) => (
           <div key={c.id} className={`bg-discord-bg-dark rounded-xl px-5 py-4 flex items-center gap-4 border border-discord-bg-darker/40 ${c.status !== "active" ? "opacity-50" : ""}`}>
             <div className="flex-1 min-w-0">
@@ -965,7 +966,7 @@ function AdminInvitesSection() {
                 <button
                   onClick={() => navigator.clipboard?.writeText(c.code)}
                   className="text-discord-text-muted hover:text-discord-text transition-colors"
-                  title="Copy code"
+                  title={ta("copyCode")}
                 >
                   <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -976,11 +977,11 @@ function AdminInvitesSection() {
                 </span>
               </div>
               <div className="text-xs text-discord-text-muted flex items-center gap-3">
-                <span>Uses: {c.useCount}/{c.maxUses}</span>
+                <span>{ta("uses", { used: c.useCount, max: c.maxUses })}</span>
                 <span>·</span>
-                <span>By: {c.createdByUsername}</span>
+                <span>{ta("by", { name: c.createdByUsername })}</span>
                 <span>·</span>
-                <span>{c.expiresAt ? `Expires ${new Date(c.expiresAt).toLocaleDateString()}` : "No expiry"}</span>
+                <span>{c.expiresAt ? ta("expires", { date: new Date(c.expiresAt).toLocaleDateString() }) : ta("noExpiry")}</span>
               </div>
             </div>
             {c.status === "active" && (
@@ -988,7 +989,7 @@ function AdminInvitesSection() {
                 onClick={() => handleRevoke(c.id)}
                 className="text-sm px-4 py-1.5 rounded-md font-medium bg-discord-red/20 text-discord-red hover:bg-discord-red/30 transition-colors shrink-0"
               >
-                Revoke
+                {ta("revoke")}
               </button>
             )}
           </div>
@@ -1001,6 +1002,8 @@ function AdminInvitesSection() {
 // ─── Admin: Tags ───────────────────────────────────────────────────────────────
 
 function AdminTagsSection() {
+  const ta = useTranslations("admin");
+  const tc = useTranslations("common");
   const [tags, setTags] = useState<Tag[]>([]);
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState("");
@@ -1033,7 +1036,7 @@ function AdminTagsSection() {
     const res = await fetch("/api/admin/tags", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, nameCn, description, color }) });
     if (!res.ok) {
       const data = await res.json();
-      setError(data.error || "Failed to create tag");
+      setError(data.error || ta("failedCreateTag"));
       setCreating(false);
       return;
     }
@@ -1043,13 +1046,13 @@ function AdminTagsSection() {
   };
 
   const handleDelete = async (tag: Tag) => {
-    if (!confirm(`Delete tag "${tag.name}"? This will also unlink it from any channels or lessons that require it.`)) return;
+    if (!confirm(ta("deleteTagConfirm", { name: tag.name }))) return;
     setDeletingId(tag.id);
     setError("");
     const res = await fetch("/api/admin/tags", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: tag.id }) });
     if (!res.ok) {
       const data = await res.json();
-      setError(data.error || "Failed to delete tag");
+      setError(data.error || ta("failedDeleteTag"));
       setDeletingId(null);
       return;
     }
@@ -1057,36 +1060,36 @@ function AdminTagsSection() {
     setDeletingId(null);
   };
 
-  if (loading) return <div className="text-discord-text-muted text-sm">Loading tags...</div>;
+  if (loading) return <div className="text-discord-text-muted text-sm">{ta("loadingTags")}</div>;
 
   return (
     <div className="max-w-2xl">
       <SectionTitle>
-        Tag Management{" "}
+        {ta("tagManagement")}{" "}
         <span className="text-discord-text-muted text-xl font-normal">({tags.length})</span>
       </SectionTitle>
 
       {/* Create form */}
       <form onSubmit={handleCreate} className="bg-discord-bg-dark rounded-xl p-5 mb-6 border border-discord-bg-darker/60">
-        <h3 className="text-sm font-semibold text-discord-text mb-4">Create New Tag</h3>
+        <h3 className="text-sm font-semibold text-discord-text mb-4">{ta("createNewTag")}</h3>
         {error && <div className="text-red-400 text-sm mb-3">{error}</div>}
         <div className="grid grid-cols-2 gap-3 mb-3">
           <div>
-            <label className="block text-xs font-medium text-discord-text-muted mb-1.5">Name (EN) *</label>
+            <label className="block text-xs font-medium text-discord-text-muted mb-1.5">{ta("nameEn")}</label>
             <input type="text" value={name} onChange={(e) => setName(e.target.value)} required className="w-full px-3 py-2 bg-discord-bg rounded-md text-sm text-discord-text focus:outline-none focus:ring-2 focus:ring-discord-accent border border-discord-bg-darker" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-discord-text-muted mb-1.5">Name (CN)</label>
+            <label className="block text-xs font-medium text-discord-text-muted mb-1.5">{ta("nameCn")}</label>
             <input type="text" value={nameCn} onChange={(e) => setNameCn(e.target.value)} className="w-full px-3 py-2 bg-discord-bg rounded-md text-sm text-discord-text focus:outline-none focus:ring-2 focus:ring-discord-accent border border-discord-bg-darker" />
           </div>
         </div>
         <div className="flex gap-3 mb-4">
           <div className="flex-1">
-            <label className="block text-xs font-medium text-discord-text-muted mb-1.5">Description</label>
+            <label className="block text-xs font-medium text-discord-text-muted mb-1.5">{ta("description")}</label>
             <input type="text" value={description} onChange={(e) => setDescription(e.target.value)} className="w-full px-3 py-2 bg-discord-bg rounded-md text-sm text-discord-text focus:outline-none focus:ring-2 focus:ring-discord-accent border border-discord-bg-darker" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-discord-text-muted mb-1.5">Color</label>
+            <label className="block text-xs font-medium text-discord-text-muted mb-1.5">{ta("color")}</label>
             <div className="flex items-center gap-2">
               <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="w-10 h-9 rounded cursor-pointer border-0 bg-transparent p-0" />
               <code className="text-xs font-mono text-discord-text-muted">{color}</code>
@@ -1098,13 +1101,13 @@ function AdminTagsSection() {
           disabled={creating || !name.trim()}
           className="px-5 py-2 bg-discord-accent hover:bg-discord-accent-hover text-white text-sm font-semibold rounded-md transition-colors disabled:opacity-50 flex items-center gap-1"
         >
-          <ButtonSpinner loading={creating}>Create Tag</ButtonSpinner>
+          <ButtonSpinner loading={creating}>{ta("createTag")}</ButtonSpinner>
         </button>
       </form>
 
       {/* Tag list */}
       <div className="space-y-2">
-        {tags.length === 0 && <p className="text-sm text-discord-text-muted">No tags yet.</p>}
+        {tags.length === 0 && <p className="text-sm text-discord-text-muted">{ta("noTagsYet")}</p>}
         {tags.map((tag) => (
           <div key={tag.id} className="bg-discord-bg-dark rounded-xl px-5 py-4 flex items-center gap-4 border border-discord-bg-darker/40">
             <div className="w-5 h-5 rounded-full shrink-0 shadow-sm" style={{ backgroundColor: tag.color }} />
@@ -1122,7 +1125,7 @@ function AdminTagsSection() {
               disabled={deletingId === tag.id}
               className="ml-2 px-2.5 py-1 text-xs font-medium text-red-400 hover:text-white hover:bg-red-500/80 rounded-md transition-colors disabled:opacity-50 flex items-center gap-1 shrink-0"
             >
-              {deletingId === tag.id ? <Spinner /> : "Delete"}
+              {deletingId === tag.id ? <Spinner /> : tc("delete")}
             </button>
           </div>
         ))}
@@ -1203,6 +1206,8 @@ const TASK_STATUS_COLORS: Record<string, string> = {
 };
 
 function AdminTasksSection() {
+  const ta = useTranslations("admin");
+  const tc = useTranslations("common");
   const [channels, setChannels] = useState<TaskChannel[]>([]);
   const [tasks, setTasks] = useState<AdminTask[]>([]);
   const [loading, setLoading] = useState(true);
@@ -1383,7 +1388,7 @@ function AdminTasksSection() {
       fetchData();
     } else {
       const data = await res.json();
-      setFormError(data.error || "Failed to create task");
+      setFormError(data.error || ta("failedCreateTask"));
     }
     setCreating(false);
   };
@@ -1442,7 +1447,7 @@ function AdminTasksSection() {
       fetchData();
     } else {
       const data = await res.json();
-      setFormError(data.error || "Failed to update task");
+      setFormError(data.error || ta("failedUpdateTask"));
     }
     setCreating(false);
   };
@@ -1483,94 +1488,94 @@ function AdminTasksSection() {
         }),
       });
       if (res.ok) {
-        setTemplateSaveMsg({ type: "ok", text: "Template saved!" });
+        setTemplateSaveMsg({ type: "ok", text: ta("templateSaved") });
         setShowSaveTemplate(false);
         setTemplateName("");
         setTemplateNameCn("");
         setTimeout(() => setTemplateSaveMsg(null), 3000);
       } else {
         const data = await res.json();
-        setTemplateSaveMsg({ type: "err", text: data.error || "Failed to save template" });
+        setTemplateSaveMsg({ type: "err", text: data.error || ta("failedSaveTemplate") });
       }
     } catch {
-      setTemplateSaveMsg({ type: "err", text: "Network error" });
+      setTemplateSaveMsg({ type: "err", text: ta("networkError") });
     }
     setSavingTemplate(false);
   };
 
-  if (loading) return <div className="text-discord-text-muted text-sm">Loading tasks...</div>;
+  if (loading) return <div className="text-discord-text-muted text-sm">{ta("loadingTasks")}</div>;
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <SectionTitle>Task Management</SectionTitle>
+        <SectionTitle>{ta("taskManagement")}</SectionTitle>
         <button
           onClick={() => { setShowForm(!showForm); if (showForm) { setEditingTaskId(null); setTitle(""); setTitleCn(""); setDescription(""); setDescriptionCn(""); setBountyUsd(""); setBountyRmb(""); setBonusBountyUsd(""); setBonusBountyRmb(""); setMaxAttempts("5"); setDeadline(""); setPublishNow(false); setChecklistItems([]); setNewChecklistItem(""); setSelfChecklistItems([]); setNewSelfChecklistItem(""); setTaskAttachments([]); setDeliverableSlots([]); } }}
           className="px-4 py-2 bg-discord-accent hover:bg-discord-accent/80 text-white rounded-lg text-sm font-semibold transition"
         >
-          {showForm ? "Cancel" : "+ Create Task"}
+          {showForm ? ta("cancel") : ta("createTaskBtn")}
         </button>
       </div>
 
       {showForm && (
         <div className="mb-6 p-4 bg-discord-bg-dark rounded-xl border border-discord-bg-darker/60">
-          <h3 className="text-sm font-semibold text-discord-text mb-3 uppercase">{editingTaskId ? "Edit Task" : "New Task"}</h3>
+          <h3 className="text-sm font-semibold text-discord-text mb-3 uppercase">{editingTaskId ? ta("editTask") : ta("newTask")}</h3>
           <div className="grid grid-cols-2 gap-3">
             <div className="col-span-2">
-              <label className="block text-xs text-discord-text-muted mb-1">Channel *</label>
+              <label className="block text-xs text-discord-text-muted mb-1">{ta("channel")}</label>
               <select value={channelId} onChange={(e) => setChannelId(e.target.value)} className="w-full p-2 bg-discord-bg border border-discord-border rounded text-sm text-discord-text focus:outline-none focus:ring-2 focus:ring-discord-accent">
-                <option value="">Select channel...</option>
+                <option value="">{ta("selectChannel")}</option>
                 {channels.map((ch) => (<option key={ch.id} value={ch.id}>#{ch.name}</option>))}
               </select>
             </div>
             <div className="col-span-2">
-              <label className="block text-xs text-discord-text-muted mb-1">Title (EN) *</label>
+              <label className="block text-xs text-discord-text-muted mb-1">{ta("titleEn")}</label>
               <input value={title} onChange={(e) => setTitle(e.target.value)} className="w-full p-2 bg-discord-bg border border-discord-border rounded text-sm text-discord-text focus:outline-none" placeholder="e.g. Voice Recording #42 — English Narration" />
             </div>
             <div className="col-span-2">
-              <label className="block text-xs text-discord-text-muted mb-1">Title (CN)</label>
+              <label className="block text-xs text-discord-text-muted mb-1">{ta("titleCn")}</label>
               <input value={titleCn} onChange={(e) => setTitleCn(e.target.value)} className="w-full p-2 bg-discord-bg border border-discord-border rounded text-sm text-discord-text focus:outline-none" />
             </div>
             <div className="col-span-2">
               <div className="flex items-center justify-between mb-1">
-                <label className="text-xs text-discord-text-muted">Description (EN) *</label>
+                <label className="text-xs text-discord-text-muted">{ta("descriptionEn")}</label>
                 <button type="button" onClick={() => setPreviewDescEn(!previewDescEn)} className="text-[10px] px-2 py-0.5 rounded bg-discord-bg-hover text-discord-text-muted hover:text-discord-text transition">
-                  {previewDescEn ? "Edit" : "Preview"}
+                  {previewDescEn ? ta("edit") : ta("preview")}
                 </button>
               </div>
               {previewDescEn ? (
-                <div className="w-full p-2 bg-discord-bg border border-discord-border rounded text-sm text-discord-text-secondary min-h-[72px] whitespace-pre-wrap">{description || "Nothing to preview"}</div>
+                <div className="w-full p-2 bg-discord-bg border border-discord-border rounded text-sm text-discord-text-secondary min-h-[72px] whitespace-pre-wrap">{description || ta("nothingToPreview")}</div>
               ) : (
                 <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} className="w-full p-2 bg-discord-bg border border-discord-border rounded text-sm text-discord-text focus:outline-none resize-none" placeholder="Task requirements and instructions (Markdown)..." />
               )}
             </div>
             <div className="col-span-2">
               <div className="flex items-center justify-between mb-1">
-                <label className="text-xs text-discord-text-muted">Description (CN)</label>
+                <label className="text-xs text-discord-text-muted">{ta("descriptionCn")}</label>
                 <button type="button" onClick={() => setPreviewDescCn(!previewDescCn)} className="text-[10px] px-2 py-0.5 rounded bg-discord-bg-hover text-discord-text-muted hover:text-discord-text transition">
-                  {previewDescCn ? "Edit" : "Preview"}
+                  {previewDescCn ? ta("edit") : ta("preview")}
                 </button>
               </div>
               {previewDescCn ? (
-                <div className="w-full p-2 bg-discord-bg border border-discord-border rounded text-sm text-discord-text-secondary min-h-[72px] whitespace-pre-wrap">{descriptionCn || "Nothing to preview"}</div>
+                <div className="w-full p-2 bg-discord-bg border border-discord-border rounded text-sm text-discord-text-secondary min-h-[72px] whitespace-pre-wrap">{descriptionCn || ta("nothingToPreview")}</div>
               ) : (
                 <textarea value={descriptionCn} onChange={(e) => setDescriptionCn(e.target.value)} rows={3} className="w-full p-2 bg-discord-bg border border-discord-border rounded text-sm text-discord-text focus:outline-none resize-none" placeholder="中文任务说明 (支持 Markdown)..." />
               )}
             </div>
             <div>
-              <label className="block text-xs text-discord-text-muted mb-1">Bounty USD</label>
+              <label className="block text-xs text-discord-text-muted mb-1">{ta("bountyUsd")}</label>
               <input value={bountyUsd} onChange={(e) => setBountyUsd(e.target.value)} onKeyDown={(e) => { if (e.key.length === 1 && !/[\d.,]/.test(e.key)) e.preventDefault(); }} placeholder="25.00" className="w-full p-2 bg-discord-bg border border-discord-border rounded text-sm text-discord-text focus:outline-none" />
             </div>
             <div>
-              <label className="block text-xs text-discord-text-muted mb-1">Bounty RMB</label>
+              <label className="block text-xs text-discord-text-muted mb-1">{ta("bountyRmb")}</label>
               <input value={bountyRmb} onChange={(e) => setBountyRmb(e.target.value)} onKeyDown={(e) => { if (e.key.length === 1 && !/[\d.,]/.test(e.key)) e.preventDefault(); }} placeholder="178.00" className="w-full p-2 bg-discord-bg border border-discord-border rounded text-sm text-discord-text focus:outline-none" />
             </div>
             <div>
-              <label className="block text-xs text-discord-text-muted mb-1">Bonus USD</label>
+              <label className="block text-xs text-discord-text-muted mb-1">{ta("bonusUsd")}</label>
               <input value={bonusBountyUsd} onChange={(e) => setBonusBountyUsd(e.target.value)} onKeyDown={(e) => { if (e.key.length === 1 && !/[\d.,]/.test(e.key)) e.preventDefault(); }} placeholder="35.00" className="w-full p-2 bg-discord-bg border border-discord-border rounded text-sm text-discord-text focus:outline-none" />
             </div>
             <div>
-              <label className="block text-xs text-discord-text-muted mb-1">Bonus RMB</label>
+              <label className="block text-xs text-discord-text-muted mb-1">{ta("bonusRmb")}</label>
               <input value={bonusBountyRmb} onChange={(e) => setBonusBountyRmb(e.target.value)} onKeyDown={(e) => { if (e.key.length === 1 && !/[\d.,]/.test(e.key)) e.preventDefault(); }} placeholder="72.00" className="w-full p-2 bg-discord-bg border border-discord-border rounded text-sm text-discord-text focus:outline-none" />
             </div>
             {/* Attachments */}
@@ -1581,7 +1586,7 @@ function AdminTasksSection() {
                 context="task-attachment"
                 maxFiles={10}
                 maxSizeMb={100}
-                label="Attachments — reference files, scripts, examples"
+                label={ta("attachmentsLabel")}
                 compact
               />
             </div>
@@ -1596,8 +1601,8 @@ function AdminTasksSection() {
 
             {/* Self-Checklist Builder (creator guidance) */}
             <div className="col-span-2">
-              <label className="block text-xs text-discord-text-muted mb-1">Self-Checklist (creator guidance)</label>
-              <p className="text-[10px] text-discord-text-muted mb-1.5">Non-interactive guidance shown to creators before they submit. They don&apos;t need to click anything.</p>
+              <label className="block text-xs text-discord-text-muted mb-1">{ta("selfChecklist")}</label>
+              <p className="text-[10px] text-discord-text-muted mb-1.5">{ta("selfChecklistDesc")}</p>
               {selfChecklistItems.length > 0 && (
                 <div className="space-y-1 mb-2">
                   {selfChecklistItems.map((item, i) => (
@@ -1633,14 +1638,14 @@ function AdminTasksSection() {
                   }}
                   className="px-3 py-1.5 text-xs bg-sky-500/20 text-sky-400 rounded hover:bg-sky-500/30 transition"
                 >
-                  + Add
+                  {ta("addItem")}
                 </button>
               </div>
             </div>
 
             {/* Review Checklist Builder */}
             <div className="col-span-2">
-              <label className="block text-xs text-discord-text-muted mb-1">Review Checklist — items reviewers will check</label>
+              <label className="block text-xs text-discord-text-muted mb-1">{ta("reviewChecklist")}</label>
               {checklistItems.length > 0 && (
                 <div className="space-y-1 mb-2">
                   {checklistItems.map((item, i) => (
@@ -1676,25 +1681,25 @@ function AdminTasksSection() {
                   }}
                   className="px-3 py-1.5 text-xs bg-discord-accent/20 text-discord-accent rounded hover:bg-discord-accent/30 transition"
                 >
-                  + Add
+                  {ta("addItem")}
                 </button>
               </div>
             </div>
 
             <div>
-              <label className="block text-xs text-discord-text-muted mb-1">Max Attempts</label>
+              <label className="block text-xs text-discord-text-muted mb-1">{ta("maxAttempts")}</label>
               <input value={maxAttempts} onChange={(e) => setMaxAttempts(e.target.value)} type="number" min="1" className="w-full p-2 bg-discord-bg border border-discord-border rounded text-sm text-discord-text focus:outline-none" />
             </div>
             <div>
-              <label className="block text-xs text-discord-text-muted mb-1">Deadline</label>
+              <label className="block text-xs text-discord-text-muted mb-1">{ta("deadline")}</label>
               <input type="datetime-local" value={deadline} onChange={(e) => setDeadline(e.target.value)} className="w-full p-2 bg-discord-bg border border-discord-border rounded text-sm text-discord-text focus:outline-none" />
-              {!deadline && <p className="text-xs text-discord-text-muted mt-1">Leave empty for no deadline</p>}
-              {deadline && new Date(deadline) < new Date() && <p className="text-xs text-discord-red mt-1">Deadline cannot be in the past</p>}
+              {!deadline && <p className="text-xs text-discord-text-muted mt-1">{ta("noDeadlineHint")}</p>}
+              {deadline && new Date(deadline) < new Date() && <p className="text-xs text-discord-red mt-1">{ta("deadlinePastError")}</p>}
             </div>
           </div>
           {formError && <p className="text-xs text-discord-red mt-2">{formError}</p>}
           {deliverableSlots.length === 0 && (
-            <p className="text-xs text-red-400 mt-2">⚠ Cannot publish: add at least one deliverable slot.</p>
+            <p className="text-xs text-red-400 mt-2">⚠ {ta("cannotPublish")}</p>
           )}
           <div className="mt-4 flex gap-3">
             <button
@@ -1702,14 +1707,14 @@ function AdminTasksSection() {
               disabled={creating || (!!deadline && new Date(deadline) < new Date())}
               className="flex-1 py-2.5 bg-discord-bg-hover hover:bg-discord-border text-discord-text-secondary rounded-lg text-sm font-semibold transition disabled:opacity-50 flex items-center justify-center gap-1.5"
             >
-              <ButtonSpinner loading={creating && !publishNow}>💾 Save as Draft</ButtonSpinner>
+              <ButtonSpinner loading={creating && !publishNow}>💾 {ta("saveAsDraft")}</ButtonSpinner>
             </button>
             <button
               onClick={() => { setPublishNow(true); (editingTaskId ? handleUpdate : handleCreate)(true); }}
               disabled={creating || deliverableSlots.length === 0 || (!!deadline && new Date(deadline) < new Date())}
               className="flex-1 py-2.5 bg-discord-accent hover:bg-discord-accent/80 text-white rounded-lg text-sm font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
             >
-              <ButtonSpinner loading={creating && publishNow}>✈ Publish</ButtonSpinner>
+              <ButtonSpinner loading={creating && publishNow}>✈ {ta("publish")}</ButtonSpinner>
             </button>
           </div>
           <div className="mt-2 flex justify-end">
@@ -1718,7 +1723,7 @@ function AdminTasksSection() {
               onClick={() => { setShowSaveTemplate(!showSaveTemplate); setTemplateSaveMsg(null); }}
               className="py-1.5 px-3 bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 rounded-lg text-xs font-semibold transition flex items-center gap-1.5"
             >
-              📋 Save as Template
+              📋 {ta("saveAsTemplate")}
             </button>
           </div>
           {templateSaveMsg && (
@@ -1729,7 +1734,7 @@ function AdminTasksSection() {
               <p className="text-xs text-discord-text-muted mb-2">Save current task configuration as a reusable template. Category icon will be auto-detected from your deliverable slots ({(TEMPLATE_ICONS[detectCategory(deliverableSlots)] || TEMPLATE_ICONS.other).icon} {detectCategory(deliverableSlots)}).</p>
               <div className="grid grid-cols-2 gap-2 mb-2">
                 <div>
-                  <label className="block text-xs text-discord-text-muted mb-1">Template Name *</label>
+                  <label className="block text-xs text-discord-text-muted mb-1">{ta("templateName")}</label>
                   <input
                     value={templateName}
                     onChange={(e) => setTemplateName(e.target.value)}
@@ -1739,7 +1744,7 @@ function AdminTasksSection() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-discord-text-muted mb-1">Name (CN)</label>
+                  <label className="block text-xs text-discord-text-muted mb-1">{ta("nameCn")}</label>
                   <input
                     value={templateNameCn}
                     onChange={(e) => setTemplateNameCn(e.target.value)}
@@ -1754,13 +1759,13 @@ function AdminTasksSection() {
                   disabled={savingTemplate || !templateName.trim()}
                   className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded text-sm font-semibold transition disabled:opacity-50 flex items-center gap-1"
                 >
-                  <ButtonSpinner loading={savingTemplate}>Save Template</ButtonSpinner>
+                  <ButtonSpinner loading={savingTemplate}>{ta("saveTemplate")}</ButtonSpinner>
                 </button>
                 <button
                   onClick={() => { setShowSaveTemplate(false); setTemplateName(""); setTemplateNameCn(""); }}
                   className="px-4 py-2 bg-discord-bg-hover text-discord-text-muted rounded text-sm transition hover:text-discord-text"
                 >
-                  Cancel
+                  {ta("cancel")}
                 </button>
               </div>
             </div>
@@ -1769,7 +1774,7 @@ function AdminTasksSection() {
       )}
 
       {tasks.length === 0 ? (
-        <p className="text-sm text-discord-text-muted text-center py-8">No tasks created yet</p>
+        <p className="text-sm text-discord-text-muted text-center py-8">{ta("noTasksYet")}</p>
       ) : (
         <div className="space-y-1">
           {tasks.map((task) => (
@@ -1785,13 +1790,13 @@ function AdminTasksSection() {
               <div className="flex gap-1 shrink-0">
                 {task.status === "draft" && (
                   <>
-                    <button onClick={() => handleEdit(task.id)} disabled={editLoading === task.id} className="text-xs px-2 py-1 bg-discord-accent hover:bg-discord-accent/80 text-white rounded transition disabled:opacity-50 flex items-center gap-1"><ButtonSpinner loading={editLoading === task.id}>Edit</ButtonSpinner></button>
-                    <button onClick={() => handleStatusChange(task.id, "active")} disabled={actionLoadingId === task.id} className="text-xs px-2 py-1 bg-green-600 hover:bg-green-700 text-white rounded transition disabled:opacity-50 flex items-center gap-1"><ButtonSpinner loading={actionLoadingId === task.id}>Publish</ButtonSpinner></button>
-                    <button onClick={() => handleStatusChange(task.id, "archived")} disabled={actionLoadingId === task.id} className="text-xs px-2 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded transition disabled:opacity-50 flex items-center gap-1"><ButtonSpinner loading={actionLoadingId === task.id}>Archive</ButtonSpinner></button>
+                    <button onClick={() => handleEdit(task.id)} disabled={editLoading === task.id} className="text-xs px-2 py-1 bg-discord-accent hover:bg-discord-accent/80 text-white rounded transition disabled:opacity-50 flex items-center gap-1"><ButtonSpinner loading={editLoading === task.id}>{ta("edit")}</ButtonSpinner></button>
+                    <button onClick={() => handleStatusChange(task.id, "active")} disabled={actionLoadingId === task.id} className="text-xs px-2 py-1 bg-green-600 hover:bg-green-700 text-white rounded transition disabled:opacity-50 flex items-center gap-1"><ButtonSpinner loading={actionLoadingId === task.id}>{ta("publish")}</ButtonSpinner></button>
+                    <button onClick={() => handleStatusChange(task.id, "archived")} disabled={actionLoadingId === task.id} className="text-xs px-2 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded transition disabled:opacity-50 flex items-center gap-1"><ButtonSpinner loading={actionLoadingId === task.id}>{ta("archive")}</ButtonSpinner></button>
                   </>
                 )}
                 {task.status === "active" && (
-                  <button onClick={() => handleStatusChange(task.id, "archived")} disabled={actionLoadingId === task.id} className="text-xs px-2 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded transition disabled:opacity-50 flex items-center gap-1"><ButtonSpinner loading={actionLoadingId === task.id}>Archive</ButtonSpinner></button>
+                  <button onClick={() => handleStatusChange(task.id, "archived")} disabled={actionLoadingId === task.id} className="text-xs px-2 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded transition disabled:opacity-50 flex items-center gap-1"><ButtonSpinner loading={actionLoadingId === task.id}>{ta("archive")}</ButtonSpinner></button>
                 )}
               </div>
             </div>
@@ -1826,6 +1831,8 @@ interface ChannelMod {
 // ─── Admin: Task Templates ───────────────────────────────────────────────────
 
 function AdminTemplatesSection() {
+  const ta = useTranslations("admin");
+  const tc = useTranslations("common");
   const { navigateTo } = useSettingsModal();
   const [templates, setTemplates] = useState<TaskTemplate[]>([]);
   const [loading, setLoading] = useState(true);
@@ -1929,7 +1936,7 @@ function AdminTemplatesSection() {
   const saveTemplate = async () => {
     const isCreate = showCreateForm;
     if (isCreate && !templateForm.name) {
-      setFormError("Name is required");
+      setFormError(ta("nameRequired"));
       return;
     }
     setSaving(true);
@@ -1966,7 +1973,7 @@ function AdminTemplatesSection() {
       fetchTemplates();
     } else {
       const data = await res.json();
-      setFormError(data.error || "Failed to save");
+      setFormError(data.error || ta("failedToSave"));
     }
     setSaving(false);
   };
@@ -2016,15 +2023,15 @@ function AdminTemplatesSection() {
   const renderTemplateForm = () => (
     <div className="mb-6 p-4 bg-discord-bg-dark rounded-xl border border-discord-bg-darker/60">
       <h3 className="text-sm font-semibold text-discord-text mb-3 uppercase">
-        {showCreateForm ? "New Template" : "Edit Template"}
+        {showCreateForm ? ta("newTemplate") : ta("editTemplate")}
       </h3>
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-xs text-discord-text-muted mb-1">Template Name *</label>
+          <label className="block text-xs text-discord-text-muted mb-1">{ta("templateName")}</label>
           <input value={templateForm.name} onChange={(e) => setTemplateForm({ ...templateForm, name: e.target.value })} className="w-full p-2 bg-discord-bg border border-discord-border rounded text-sm text-discord-text focus:outline-none" placeholder="e.g. Voiceover Recording" />
         </div>
         <div>
-          <label className="block text-xs text-discord-text-muted mb-1">Name (CN)</label>
+          <label className="block text-xs text-discord-text-muted mb-1">{ta("nameCn")}</label>
           <input value={templateForm.nameCn} onChange={(e) => setTemplateForm({ ...templateForm, nameCn: e.target.value })} className="w-full p-2 bg-discord-bg border border-discord-border rounded text-sm text-discord-text focus:outline-none" placeholder="中文模板名称" />
         </div>
         <div>
@@ -2033,47 +2040,47 @@ function AdminTemplatesSection() {
             const style = TEMPLATE_ICONS[cat] || TEMPLATE_ICONS.other;
             return (
               <>
-                <label className="block text-xs text-discord-text-muted mb-1">Category (auto-detected)</label>
+                <label className="block text-xs text-discord-text-muted mb-1">{ta("categoryAutoDetected")}</label>
                 <div className="w-full p-2 bg-discord-bg border border-discord-border rounded text-sm text-discord-text flex items-center gap-2">
                   <span>{style.icon}</span>
                   <span className="capitalize">{cat}</span>
-                  <span className="text-[10px] text-discord-text-muted ml-auto">based on deliverables</span>
+                  <span className="text-[10px] text-discord-text-muted ml-auto">{ta("basedOnDeliverables")}</span>
                 </div>
               </>
             );
           })()}
         </div>
         <div>
-          <label className="block text-xs text-discord-text-muted mb-1">Max Attempts</label>
+          <label className="block text-xs text-discord-text-muted mb-1">{ta("maxAttempts")}</label>
           <input type="number" min="1" value={templateForm.maxAttempts} onChange={(e) => setTemplateForm({ ...templateForm, maxAttempts: e.target.value })} className="w-full p-2 bg-discord-bg border border-discord-border rounded text-sm text-discord-text focus:outline-none" />
         </div>
         <div className="col-span-2">
-          <label className="block text-xs text-discord-text-muted mb-1">Description (EN)</label>
+          <label className="block text-xs text-discord-text-muted mb-1">{ta("descriptionEnLabel")}</label>
           <textarea value={templateForm.description} onChange={(e) => setTemplateForm({ ...templateForm, description: e.target.value })} rows={3} className="w-full p-2 bg-discord-bg border border-discord-border rounded text-sm text-discord-text focus:outline-none resize-none" placeholder="Task requirements and instructions (Markdown)..." />
         </div>
         <div className="col-span-2">
-          <label className="block text-xs text-discord-text-muted mb-1">Description (CN)</label>
+          <label className="block text-xs text-discord-text-muted mb-1">{ta("descriptionCnLabel")}</label>
           <textarea value={templateForm.descriptionCn} onChange={(e) => setTemplateForm({ ...templateForm, descriptionCn: e.target.value })} rows={3} className="w-full p-2 bg-discord-bg border border-discord-border rounded text-sm text-discord-text focus:outline-none resize-none" placeholder="中文任务说明 (支持 Markdown)..." />
         </div>
         <div>
-          <label className="block text-xs text-discord-text-muted mb-1">Bounty USD</label>
+          <label className="block text-xs text-discord-text-muted mb-1">{ta("bountyUsd")}</label>
           <input value={templateForm.bountyUsd} onChange={(e) => setTemplateForm({ ...templateForm, bountyUsd: e.target.value })} onKeyDown={(e) => { if (e.key.length === 1 && !/[\d.,]/.test(e.key)) e.preventDefault(); }} placeholder="25.00" className="w-full p-2 bg-discord-bg border border-discord-border rounded text-sm text-discord-text focus:outline-none" />
         </div>
         <div>
-          <label className="block text-xs text-discord-text-muted mb-1">Bounty RMB</label>
+          <label className="block text-xs text-discord-text-muted mb-1">{ta("bountyRmb")}</label>
           <input value={templateForm.bountyRmb} onChange={(e) => setTemplateForm({ ...templateForm, bountyRmb: e.target.value })} onKeyDown={(e) => { if (e.key.length === 1 && !/[\d.,]/.test(e.key)) e.preventDefault(); }} placeholder="178.00" className="w-full p-2 bg-discord-bg border border-discord-border rounded text-sm text-discord-text focus:outline-none" />
         </div>
         <div>
-          <label className="block text-xs text-discord-text-muted mb-1">Bonus USD</label>
+          <label className="block text-xs text-discord-text-muted mb-1">{ta("bonusUsd")}</label>
           <input value={templateForm.bonusBountyUsd} onChange={(e) => setTemplateForm({ ...templateForm, bonusBountyUsd: e.target.value })} onKeyDown={(e) => { if (e.key.length === 1 && !/[\d.,]/.test(e.key)) e.preventDefault(); }} placeholder="35.00" className="w-full p-2 bg-discord-bg border border-discord-border rounded text-sm text-discord-text focus:outline-none" />
         </div>
         <div>
-          <label className="block text-xs text-discord-text-muted mb-1">Bonus RMB</label>
+          <label className="block text-xs text-discord-text-muted mb-1">{ta("bonusRmb")}</label>
           <input value={templateForm.bonusBountyRmb} onChange={(e) => setTemplateForm({ ...templateForm, bonusBountyRmb: e.target.value })} onKeyDown={(e) => { if (e.key.length === 1 && !/[\d.,]/.test(e.key)) e.preventDefault(); }} className="w-full p-2 bg-discord-bg border border-discord-border rounded text-sm text-discord-text focus:outline-none" />
         </div>
         {/* Checklist */}
         <div className="col-span-2">
-          <label className="block text-xs text-discord-text-muted mb-1">Review Checklist</label>
+          <label className="block text-xs text-discord-text-muted mb-1">{ta("reviewChecklistLabel")}</label>
           {templateForm.checklistItems.length > 0 && (
             <div className="space-y-1 mb-2">
               {templateForm.checklistItems.map((item, i) => (
@@ -2107,7 +2114,7 @@ function AdminTemplatesSection() {
               }}
               className="px-3 py-1.5 text-xs bg-discord-accent/20 text-discord-accent rounded hover:bg-discord-accent/30 transition"
             >
-              + Add
+              {ta("addItem")}
             </button>
           </div>
         </div>
@@ -2122,8 +2129,8 @@ function AdminTemplatesSection() {
 
         {/* Self-Checklist (creator guidance) */}
         <div className="col-span-2">
-          <label className="block text-xs text-discord-text-muted mb-1">Self-Checklist (creator guidance)</label>
-          <p className="text-[10px] text-discord-text-muted mb-1.5">Non-interactive guidance shown to creators before they submit.</p>
+          <label className="block text-xs text-discord-text-muted mb-1">{ta("selfChecklistLabel")}</label>
+          <p className="text-[10px] text-discord-text-muted mb-1.5">{ta("selfChecklistTemplateDesc")}</p>
           {templateForm.selfChecklistItems.length > 0 && (
             <div className="space-y-1 mb-2">
               {templateForm.selfChecklistItems.map((item, i) => (
@@ -2157,7 +2164,7 @@ function AdminTemplatesSection() {
               }}
               className="px-3 py-1.5 text-xs bg-sky-500/20 text-sky-400 rounded hover:bg-sky-500/30 transition"
             >
-              + Add
+              {ta("addItem")}
             </button>
           </div>
         </div>
@@ -2165,38 +2172,38 @@ function AdminTemplatesSection() {
       {formError && <p className="text-xs text-discord-red mt-2">{formError}</p>}
       <div className="flex gap-2 mt-3">
         <button onClick={saveTemplate} disabled={saving} className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded text-sm font-semibold transition disabled:opacity-50 flex items-center gap-1">
-          <ButtonSpinner loading={saving}>{showCreateForm ? "Create Template" : "Save Changes"}</ButtonSpinner>
+          <ButtonSpinner loading={saving}>{showCreateForm ? ta("createTemplate") : ta("saveChanges")}</ButtonSpinner>
         </button>
         <button onClick={() => { setShowCreateForm(false); setEditingTemplateId(null); setTemplateForm(emptyForm); }} className="px-4 py-2 bg-discord-bg-hover text-discord-text-muted rounded text-sm transition hover:text-discord-text">
-          Cancel
+          {ta("cancel")}
         </button>
       </div>
     </div>
   );
 
-  if (loading) return <div className="text-discord-text-muted text-sm">Loading templates...</div>;
+  if (loading) return <div className="text-discord-text-muted text-sm">{ta("loadingTemplates")}</div>;
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <SectionTitle>Task Templates</SectionTitle>
+        <SectionTitle>{ta("taskTemplates")}</SectionTitle>
         <div className="flex gap-2">
           <button
             onClick={async () => {
-              if (!confirm("Delete ALL templates and re-seed defaults?")) return;
+              if (!confirm(ta("resetConfirm"))) return;
               setLoading(true);
               await fetch("/api/templates/seed", { method: "DELETE" });
               fetchTemplates();
             }}
             className="px-3 py-2 bg-red-600/20 hover:bg-red-600/30 text-red-400 rounded-lg text-xs font-semibold transition"
           >
-            Reset to Defaults
+            {ta("resetToDefaults")}
           </button>
           <button
             onClick={() => showCreateForm ? setShowCreateForm(false) : startCreate()}
             className="px-4 py-2 bg-discord-accent hover:bg-discord-accent/80 text-white rounded-lg text-sm font-semibold transition"
           >
-            {showCreateForm ? "Cancel" : "+ Create Template"}
+            {showCreateForm ? ta("cancel") : ta("createTemplateBtn")}
           </button>
         </div>
       </div>
@@ -2206,7 +2213,7 @@ function AdminTemplatesSection() {
 
       {/* Template list */}
       {templates.length === 0 ? (
-        <p className="text-sm text-discord-text-muted text-center py-8">No templates yet. Click &quot;+ Create Template&quot; to get started.</p>
+        <p className="text-sm text-discord-text-muted text-center py-8">{ta("noTemplatesYet")}</p>
       ) : (
         <div className="space-y-3">
           {templates.map((t) => {
@@ -2234,27 +2241,27 @@ function AdminTemplatesSection() {
                         onClick={() => applyTemplate(t)}
                         className="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs rounded font-semibold transition"
                       >
-                        Use Template
+                        {ta("useTemplate")}
                       </button>
                       <button
                         onClick={() => isEditing ? setEditingTemplateId(null) : startEdit(t)}
                         className="px-3 py-1.5 bg-discord-accent/20 text-discord-accent text-xs rounded hover:bg-discord-accent/30 font-semibold transition"
                       >
-                        {isEditing ? "Cancel Edit" : "Edit"}
+                        {isEditing ? ta("cancelEdit") : ta("edit")}
                       </button>
                       <button
                         onClick={() => cloneTemplate(t)}
                         disabled={cloningTemplateId === t.id}
                         className="px-2 py-1.5 bg-sky-500/20 text-sky-400 text-xs rounded hover:bg-sky-500/30 transition disabled:opacity-50 flex items-center gap-1 font-semibold"
                       >
-                        <ButtonSpinner loading={cloningTemplateId === t.id}>Clone</ButtonSpinner>
+                        <ButtonSpinner loading={cloningTemplateId === t.id}>{ta("clone")}</ButtonSpinner>
                       </button>
                       <button
                         onClick={() => deleteTemplate(t.id)}
                         disabled={deletingTemplateId === t.id}
                         className="px-2 py-1.5 bg-red-500/20 text-red-400 text-xs rounded hover:bg-red-500/30 transition disabled:opacity-50 flex items-center gap-1"
                       >
-                        <ButtonSpinner loading={deletingTemplateId === t.id}>Delete</ButtonSpinner>
+                        <ButtonSpinner loading={deletingTemplateId === t.id}>{ta("delete")}</ButtonSpinner>
                       </button>
                     </div>
                   </div>
@@ -2263,11 +2270,11 @@ function AdminTemplatesSection() {
                 <div className="px-4 pb-4">
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <p className="text-xs text-discord-text-muted mb-1">Description preview</p>
-                      <p className="text-discord-text-secondary text-xs line-clamp-3">{t.description || "No description"}</p>
+                      <p className="text-xs text-discord-text-muted mb-1">{ta("descriptionPreview")}</p>
+                      <p className="text-discord-text-secondary text-xs line-clamp-3">{t.description || ta("noDescription")}</p>
                     </div>
                     <div>
-                      <p className="text-xs text-discord-text-muted mb-1">Review checklist</p>
+                      <p className="text-xs text-discord-text-muted mb-1">{ta("reviewChecklistLabel")}</p>
                       {t.checklist && t.checklist.length > 0 ? (
                         <ul className="text-xs text-discord-text-secondary space-y-0.5">
                           {t.checklist.slice(0, 4).map((c, i) => (
@@ -2275,7 +2282,7 @@ function AdminTemplatesSection() {
                           ))}
                           {t.checklist.length > 4 && <li className="text-discord-text-muted">+{t.checklist.length - 4} more...</li>}
                         </ul>
-                      ) : <p className="text-xs text-discord-text-muted">No checklist items</p>}
+                      ) : <p className="text-xs text-discord-text-muted">{ta("noChecklistItems")}</p>}
                     </div>
                   </div>
                 </div>
@@ -2291,6 +2298,8 @@ function AdminTemplatesSection() {
 // ─── Admin: Channels ──────────────────────────────────────────────────────────
 
 function AdminChannelsSection() {
+  const ta = useTranslations("admin");
+  const tc = useTranslations("common");
   const [allTags, setAllTags] = useState<Tag[]>([]);
   const [modUsers, setModUsers] = useState<{ id: string; username: string; displayName: string | null; role: string }[]>([]);
   const [channelList, setChannelList] = useState<ChannelItem[]>([]);
@@ -2360,7 +2369,7 @@ function AdminChannelsSection() {
   }, []);
 
   const handleCreate = async () => {
-    if (!name || !type) { setCreateError("Name and type are required"); return; }
+    if (!name || !type) { setCreateError(ta("nameAndTypeRequired")); return; }
     setCreating(true); setCreateError(""); setCreateSuccess("");
 
     const res = await fetch("/api/admin/channels", {
@@ -2377,14 +2386,14 @@ function AdminChannelsSection() {
     });
 
     if (res.ok) {
-      setCreateSuccess(`Channel #${name} created!`);
+      setCreateSuccess(ta("channelCreated", { name }));
       setName(""); setNameCn(""); setDescription(""); setDescriptionCn("");
       setRequiredTagId(""); setSelectedMods([]);
       await fetchChannels();
       window.dispatchEvent(new Event("channels-updated"));
     } else {
       const data = await res.json();
-      setCreateError(data.error || "Failed to create channel");
+      setCreateError(data.error || ta("failedCreateChannel"));
     }
     setCreating(false);
   };
@@ -2438,11 +2447,11 @@ function AdminChannelsSection() {
     const errors: string[] = [];
     if (!res.ok) {
       const data = await res.json();
-      errors.push(data.error || "Failed to update channel");
+      errors.push(data.error || ta("failedUpdateChannel"));
     }
     if (!modRes.ok) {
       const data = await modRes.json();
-      errors.push(data.error || "Failed to update mods");
+      errors.push(data.error || ta("failedUpdateMods"));
     }
 
     if (errors.length > 0) {
@@ -2473,7 +2482,7 @@ function AdminChannelsSection() {
         setDeleteError(data.error || `Delete failed (${res.status})`);
       }
     } catch {
-      setDeleteError("Network error");
+      setDeleteError(ta("networkError"));
     }
     setDeleting(false);
   };
@@ -2512,7 +2521,7 @@ function AdminChannelsSection() {
     setRevokingUserId(null);
   };
 
-  if (loading) return <div className="text-discord-text-muted text-sm">Loading...</div>;
+  if (loading) return <div className="text-discord-text-muted text-sm">{ta("loading")}</div>;
 
   const grouped = {
     special: channelList.filter((c) => c.type === "special"),
@@ -2538,7 +2547,7 @@ function AdminChannelsSection() {
 
   return (
     <div>
-      <SectionTitle>Channels</SectionTitle>
+      <SectionTitle>{ta("channelsTitle")}</SectionTitle>
 
       {/* ── Create New Channel (top) ── */}
       <div className="mb-6">
@@ -2547,53 +2556,53 @@ function AdminChannelsSection() {
           className="px-4 py-2 bg-discord-accent hover:bg-discord-accent/80 text-white rounded-lg text-sm font-semibold transition flex items-center gap-2"
         >
           <span className="text-lg leading-none">{showCreate ? "−" : "+"}</span>
-          Create New Channel
+          {ta("createNewChannel")}
         </button>
 
         {showCreate && (
           <div className="mt-4 p-5 bg-discord-bg-dark rounded-lg border border-discord-border space-y-4">
-            <h3 className="text-sm font-bold text-discord-text">Create New Channel</h3>
+            <h3 className="text-sm font-bold text-discord-text">{ta("createNewChannel")}</h3>
             <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg px-4 py-2">
-              <p className="text-xs text-blue-300"><span className="font-semibold">Note:</span> Special channels are fixed and cannot be created or deleted. Only task channels and discussion channels can be created.</p>
+              <p className="text-xs text-blue-300">{ta("channelNote")}</p>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-medium text-discord-text-muted mb-1">Channel Name (EN)</label>
+                <label className="block text-xs font-medium text-discord-text-muted mb-1">{ta("channelNameEn")}</label>
                 <input value={name} onChange={(e) => setName(e.target.value)} placeholder="#channel-name" className={inputCls} />
               </div>
               <div>
-                <label className="block text-xs font-medium text-discord-text-muted mb-1">Channel Name (中文)</label>
+                <label className="block text-xs font-medium text-discord-text-muted mb-1">{ta("channelNameCn")}</label>
                 <input value={nameCn} onChange={(e) => setNameCn(e.target.value)} placeholder="#频道名称" className={inputCls} />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-medium text-discord-text-muted mb-1">Channel Type</label>
+                <label className="block text-xs font-medium text-discord-text-muted mb-1">{ta("channelType")}</label>
                 <select value={type} onChange={(e) => setType(e.target.value as "task" | "discussion")} className={inputCls}>
-                  <option value="task">Task</option>
-                  <option value="discussion">Discussion</option>
+                  <option value="task">{ta("task")}</option>
+                  <option value="discussion">{ta("discussion")}</option>
                 </select>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               {(type === "task" || type === "discussion") && (
                 <div>
-                  <label className="block text-xs font-medium text-discord-text-muted mb-1">Required Tag</label>
+                  <label className="block text-xs font-medium text-discord-text-muted mb-1">{ta("requiredTag")}</label>
                   <select value={requiredTagId} onChange={(e) => setRequiredTagId(e.target.value)} className={inputCls}>
-                    <option value="">None</option>
+                    <option value="">{ta("none")}</option>
                     {allTags.map((tag) => (<option key={tag.id} value={tag.id}>{tag.name} {tag.nameCn ? `(${tag.nameCn})` : ""}</option>))}
                   </select>
                 </div>
               )}
               <div>
-                <label className="block text-xs font-medium text-discord-text-muted mb-1">Assigned Mods</label>
+                <label className="block text-xs font-medium text-discord-text-muted mb-1">{ta("assignedMods")}</label>
                 <div className="flex items-center gap-2">
                   <select
                     value={createModDropdown}
                     onChange={(e) => setCreateModDropdown(e.target.value)}
                     className={inputCls + " flex-1"}
                   >
-                    <option value="">Select mod to add...</option>
+                    <option value="">{ta("selectModToAdd")}</option>
                     {availableCreateMods.map((u) => (
                       <option key={u.id} value={u.id}>{u.displayName || u.username} ({u.role})</option>
                     ))}
@@ -2622,11 +2631,11 @@ function AdminChannelsSection() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-medium text-discord-text-muted mb-1">Description (EN)</label>
+                <label className="block text-xs font-medium text-discord-text-muted mb-1">{ta("descriptionEnLabel")}</label>
                 <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} placeholder="Channel description..." className={inputCls + " resize-y"} />
               </div>
               <div>
-                <label className="block text-xs font-medium text-discord-text-muted mb-1">Description (中文)</label>
+                <label className="block text-xs font-medium text-discord-text-muted mb-1">{ta("descriptionCnLabel")}</label>
                 <textarea value={descriptionCn} onChange={(e) => setDescriptionCn(e.target.value)} rows={3} placeholder="频道描述..." className={inputCls + " resize-y"} />
               </div>
             </div>
@@ -2634,9 +2643,9 @@ function AdminChannelsSection() {
             {createSuccess && <p className="text-sm text-green-400">{createSuccess}</p>}
             <div className="flex items-center gap-3">
               <button onClick={handleCreate} disabled={creating} className="px-5 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg text-sm font-semibold transition disabled:opacity-50 flex items-center gap-1">
-                <ButtonSpinner loading={creating}>Save Channel</ButtonSpinner>
+                <ButtonSpinner loading={creating}>{ta("saveChannel")}</ButtonSpinner>
               </button>
-              <button onClick={() => setShowCreate(false)} className="text-sm text-discord-text-muted hover:text-discord-text transition">Cancel</button>
+              <button onClick={() => setShowCreate(false)} className="text-sm text-discord-text-muted hover:text-discord-text transition">{ta("cancel")}</button>
             </div>
           </div>
         )}
@@ -2646,10 +2655,10 @@ function AdminChannelsSection() {
       {(["special", "task", "discussion"] as const).map((cType) => (
         <div key={cType} className="mb-6">
           <h3 className="text-xs font-bold text-discord-text-muted uppercase tracking-wider mb-2">
-            {cType} Channels ({grouped[cType].length})
+            {ta(`${cType}Channels` as "specialChannels" | "taskChannels" | "discussionChannels")} ({grouped[cType].length})
           </h3>
           {grouped[cType].length === 0 && (
-            <p className="text-xs text-discord-text-muted italic">No {cType} channels</p>
+            <p className="text-xs text-discord-text-muted italic">{ta("noChannelsOfType", { type: cType })}</p>
           )}
           <div className="space-y-2">
             {grouped[cType].map((ch) => (
@@ -2672,7 +2681,7 @@ function AdminChannelsSection() {
                         onClick={() => openMembers(ch.id)}
                         className="text-xs text-purple-400 hover:text-purple-300 transition"
                       >
-                        Members
+                        {ta("members")}
                       </button>
                     )}
                     {!ch.isFixed && (
@@ -2681,13 +2690,13 @@ function AdminChannelsSection() {
                           onClick={() => editingId === ch.id ? cancelEdit() : startEdit(ch)}
                           className="text-xs text-discord-accent hover:text-discord-accent/80 transition"
                         >
-                          {editingId === ch.id ? "Cancel" : "Edit"}
+                          {editingId === ch.id ? ta("cancel") : ta("edit")}
                         </button>
                         <button
                           onClick={() => setDeletingId(deletingId === ch.id ? null : ch.id)}
                           className="text-xs text-discord-red hover:text-discord-red/80 transition"
                         >
-                          Delete
+                          {ta("delete")}
                         </button>
                       </>
                     )}
@@ -2704,19 +2713,19 @@ function AdminChannelsSection() {
                   <div className="px-4 pb-4 border-t border-discord-border pt-3 space-y-3">
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="block text-xs text-discord-text-muted mb-1">Name (EN) *</label>
+                        <label className="block text-xs text-discord-text-muted mb-1">{ta("nameEn")}</label>
                         <input value={editName} onChange={(e) => setEditName(e.target.value)} className={inputCls} />
                       </div>
                       <div>
-                        <label className="block text-xs text-discord-text-muted mb-1">Name (中文)</label>
+                        <label className="block text-xs text-discord-text-muted mb-1">{ta("nameCn")}</label>
                         <input value={editNameCn} onChange={(e) => setEditNameCn(e.target.value)} className={inputCls} />
                       </div>
                     </div>
                     {(ch.type === "task" || ch.type === "discussion") && (
                       <div>
-                        <label className="block text-xs text-discord-text-muted mb-1">Required Tag</label>
+                        <label className="block text-xs text-discord-text-muted mb-1">{ta("requiredTag")}</label>
                         <select value={editRequiredTagId} onChange={(e) => setEditRequiredTagId(e.target.value)} className={inputCls}>
-                          <option value="">No tag required</option>
+                          <option value="">{ta("noTagRequired")}</option>
                           {allTags.map((tag) => (
                             <option key={tag.id} value={tag.id}>{tag.name} {tag.nameCn ? `(${tag.nameCn})` : ""}</option>
                           ))}
@@ -2725,23 +2734,23 @@ function AdminChannelsSection() {
                     )}
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="block text-xs text-discord-text-muted mb-1">Description (EN)</label>
+                        <label className="block text-xs text-discord-text-muted mb-1">{ta("descriptionEnLabel")}</label>
                         <textarea value={editDescription} onChange={(e) => setEditDescription(e.target.value)} rows={2} className={inputCls + " resize-none"} />
                       </div>
                       <div>
-                        <label className="block text-xs text-discord-text-muted mb-1">Description (中文)</label>
+                        <label className="block text-xs text-discord-text-muted mb-1">{ta("descriptionCnLabel")}</label>
                         <textarea value={editDescriptionCn} onChange={(e) => setEditDescriptionCn(e.target.value)} rows={2} className={inputCls + " resize-none"} />
                       </div>
                     </div>
                     <div>
-                      <label className="block text-xs text-discord-text-muted mb-1">Assigned Mods</label>
+                      <label className="block text-xs text-discord-text-muted mb-1">{ta("assignedMods")}</label>
                       <div className="flex items-center gap-2 mb-2">
                         <select
                           value={editModDropdown}
                           onChange={(e) => setEditModDropdown(e.target.value)}
                           className={inputCls + " flex-1"}
                         >
-                          <option value="">Select mod to add...</option>
+                          <option value="">{ta("selectModToAdd")}</option>
                           {modUsers.filter((u) => !editMods.includes(u.id)).map((u) => (
                             <option key={u.id} value={u.id}>{u.displayName || u.username} ({u.role})</option>
                           ))}
@@ -2774,10 +2783,10 @@ function AdminChannelsSection() {
                         disabled={saving}
                         className="px-4 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded text-sm font-semibold transition disabled:opacity-50 flex items-center gap-1"
                       >
-                        <ButtonSpinner loading={saving}>Save Changes</ButtonSpinner>
+                        <ButtonSpinner loading={saving}>{ta("saveChanges")}</ButtonSpinner>
                       </button>
                       <button onClick={cancelEdit} className="text-xs text-discord-text-muted hover:text-discord-text transition">
-                        Cancel
+                        {ta("cancel")}
                       </button>
                     </div>
                   </div>
@@ -2793,15 +2802,15 @@ function AdminChannelsSection() {
         open={!!deletingId}
         onClose={() => { setDeletingId(null); setDeleteError(""); }}
         onConfirm={() => { if (deletingId) handleDelete(deletingId); }}
-        title="Delete Channel"
-        confirmText="Delete"
+        title={ta("deleteChannel")}
+        confirmText={ta("delete")}
         variant="danger"
         loading={deleting}
       >
         <p>
-          Are you sure you want to delete{" "}
+          {ta("deleteChannelConfirm")}{" "}
           <span className="font-semibold text-discord-text">#{channelList.find((c) => c.id === deletingId)?.name}</span>
-          {" "}and all its messages and tasks? This action cannot be undone.
+          {" "}{ta("deleteChannelWarning")}
         </p>
         {deleteError && <p className="mt-2 text-sm text-discord-red">{deleteError}</p>}
       </ConfirmDialog>
@@ -2812,7 +2821,7 @@ function AdminChannelsSection() {
           <div className="bg-discord-bg-dark border border-discord-border rounded-lg w-full max-w-md max-h-[70vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between px-5 py-4 border-b border-discord-border">
               <h3 className="text-sm font-bold text-discord-text">
-                Members — #{channelList.find((c) => c.id === membersChannelId)?.name}
+                {ta("membersTitle", { name: channelList.find((c) => c.id === membersChannelId)?.name || "" })}
               </h3>
               <button onClick={() => setMembersChannelId(null)} className="text-discord-text-muted hover:text-discord-text text-lg leading-none">&times;</button>
             </div>
@@ -2820,9 +2829,9 @@ function AdminChannelsSection() {
               {membersLoading ? (
                 <div className="flex justify-center py-8"><Spinner /></div>
               ) : membersNoTag ? (
-                <p className="text-sm text-discord-text-muted">This channel has no required tag — all verified users can access it.</p>
+                <p className="text-sm text-discord-text-muted">{ta("noRequiredTagDesc")}</p>
               ) : members.length === 0 ? (
-                <p className="text-sm text-discord-text-muted">No users have this tag.</p>
+                <p className="text-sm text-discord-text-muted">{ta("noUsersWithTag")}</p>
               ) : (
                 <div className="space-y-2">
                   <p className="text-xs text-discord-text-muted mb-3">{members.length} user{members.length !== 1 ? "s" : ""} with tag: <span className="text-purple-300 font-medium">{getTagName(membersTagId)}</span></p>
@@ -2830,7 +2839,7 @@ function AdminChannelsSection() {
                     <div key={m.id} className="flex items-center justify-between bg-discord-bg border border-discord-border rounded px-4 py-2">
                       <span className="text-sm text-discord-text">
                         {m.displayName || m.username} <RoleBadge role={m.role} />
-                        {m.isMod && <span className="ml-1 text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400">ASSIGNED MOD</span>}
+                        {m.isMod && <span className="ml-1 text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400">{ta("assignedMod")}</span>}
                       </span>
                       {!m.isMod && (
                         <button
@@ -2838,7 +2847,7 @@ function AdminChannelsSection() {
                           disabled={revokingUserId === m.id}
                           className="px-3 py-1 bg-discord-red/20 text-discord-red hover:bg-discord-red/30 rounded text-xs font-medium transition disabled:opacity-50 flex items-center gap-1"
                         >
-                          <ButtonSpinner loading={revokingUserId === m.id}>Revoke Tag</ButtonSpinner>
+                          <ButtonSpinner loading={revokingUserId === m.id}>{ta("revokeTag")}</ButtonSpinner>
                         </button>
                       )}
                     </div>
@@ -2873,6 +2882,8 @@ interface AuditItem {
 }
 
 function AdminAuditSection() {
+  const ta = useTranslations("admin");
+  const tc = useTranslations("common");
   const { user } = useAuth();
   const [items, setItems] = useState<AuditItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -2909,24 +2920,24 @@ function AdminAuditSection() {
     new Date(dateStr).toLocaleDateString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
 
   if (!["admin", "supermod"].includes(user?.role ?? "")) {
-    return <div className="text-discord-text-muted text-sm">You do not have permission to access this section.</div>;
+    return <div className="text-discord-text-muted text-sm">{ta("noPermission")}</div>;
   }
 
   return (
     <div>
-      <SectionTitle>Audit — Pre-Payout Review</SectionTitle>
+      <SectionTitle>{ta("auditTitle")}</SectionTitle>
       <p className="text-sm text-discord-text-muted mb-6 -mt-2">
-        Review approved work before payout is executed. Reverse approvals if quality standards are not met.
+        {ta("auditDesc")}
       </p>
 
       {loading ? (
-        <p className="text-discord-text-muted text-sm">Loading...</p>
+        <p className="text-discord-text-muted text-sm">{ta("loading")}</p>
       ) : items.length === 0 ? (
         <div className="text-center text-discord-text-muted py-12">
           <svg className="w-8 h-8 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          <p className="text-sm">No approved tasks pending audit</p>
+          <p className="text-sm">{ta("noApprovedTasks")}</p>
         </div>
       ) : (
         <div className="space-y-2">
@@ -2950,19 +2961,19 @@ function AdminAuditSection() {
               </div>
               {selectedItem?.attemptId === item.attemptId ? (
                 <div className="space-y-2">
-                  <textarea value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Reason for reversal (required)..." className="w-full p-2 bg-discord-bg border border-red-500/30 rounded text-sm text-discord-text placeholder-discord-text-muted focus:outline-none resize-none" rows={2} />
+                  <textarea value={reason} onChange={(e) => setReason(e.target.value)} placeholder={ta("reasonForReversal")} className="w-full p-2 bg-discord-bg border border-red-500/30 rounded text-sm text-discord-text placeholder-discord-text-muted focus:outline-none resize-none" rows={2} />
                   <div className="flex gap-2">
                     <button onClick={handleReversal} disabled={submitting || !reason.trim()} className="text-xs px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded font-semibold transition disabled:opacity-50 flex items-center gap-1">
-                      <ButtonSpinner loading={submitting}>Confirm Reversal</ButtonSpinner>
+                      <ButtonSpinner loading={submitting}>{ta("confirmReversal")}</ButtonSpinner>
                     </button>
                     <button onClick={() => { setSelectedItem(null); setReason(""); }} className="text-xs px-3 py-1.5 text-discord-text-muted hover:text-discord-text transition">
-                      Cancel
+                      {ta("cancel")}
                     </button>
                   </div>
                 </div>
               ) : (
                 <button onClick={() => setSelectedItem(item)} className="text-xs px-3 py-1.5 bg-red-600/20 text-red-400 hover:bg-red-600/30 rounded font-semibold transition border border-red-600/30">
-                  Reverse Approval
+                  {ta("reverseApproval")}
                 </button>
               )}
             </div>
@@ -3133,7 +3144,7 @@ export function UserSettingsModal({ isOpen, onClose, initialSection = "my-accoun
         <button
           onClick={onClose}
           className="absolute top-4 right-4 w-9 h-9 rounded-full bg-discord-bg-dark hover:bg-discord-bg-darker flex items-center justify-center text-discord-text-muted hover:text-discord-text transition-colors border border-discord-bg-darker/60 shadow-sm"
-          title="Close (Esc)"
+          title={ta("closeEsc")}
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
