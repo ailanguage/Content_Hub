@@ -1,9 +1,16 @@
 import OpenAI from "openai";
 
-const llm = new OpenAI({
-  apiKey: process.env.key,
-  baseURL: process.env.baseurl,
-});
+let _llm: OpenAI | null = null;
+
+function getLlm(): OpenAI {
+  if (!_llm) {
+    _llm = new OpenAI({
+      apiKey: process.env.key,
+      baseURL: process.env.baseurl,
+    });
+  }
+  return _llm;
+}
 
 const MODEL = process.env.model || "qwen3-max";
 
@@ -30,7 +37,7 @@ Your job right now: open the next question for the student.
 
   const userMessage = `Trainer prompt for this lesson:\n\n${trainerPromptContent}${transitionNote}\n\nThe student hasn't answered yet. Open this question in an engaging way.`;
 
-  const completion = await llm.chat.completions.create({
+  const completion = await getLlm().chat.completions.create({
     model: MODEL,
     messages: [
       { role: "system", content: systemPrompt },
@@ -84,7 +91,7 @@ Field rules:
 
   const userMessage = `Trainer prompt:\n\n${trainerPromptContent}\n\n---\n\nConversation:\n\n${conversationText}\n\nRespond as the teacher to the student's latest message. Return JSON only.`;
 
-  const completion = await llm.chat.completions.create({
+  const completion = await getLlm().chat.completions.create({
     model: MODEL,
     messages: [
       { role: "system", content: systemPrompt },
@@ -124,7 +131,7 @@ export async function generateWelcome(
   const systemPrompt = `You are a warm, encouraging training bot in a content creator community. Write a brief welcome message (2-3 sentences) for a learner entering the training channel.`;
   const userMessage = `The learner's name is "${userName}". ${progressCtx} There are ${availableLessons.length} lessons available. Be brief, warm, and encouraging.`;
 
-  const completion = await llm.chat.completions.create({
+  const completion = await getLlm().chat.completions.create({
     model: MODEL,
     messages: [
       { role: "system", content: systemPrompt },
@@ -149,7 +156,7 @@ export async function generateCongrats(
   const systemPrompt = `You are a warm, celebratory training bot. Write a brief congratulatory message (2-3 sentences) for a learner who just passed a lesson.`;
   const userMessage = `"${userName}" just passed "${lessonTitle}" with a score of ${score}% and earned the "${tagName}" tag. Celebrate their achievement briefly!`;
 
-  const completion = await llm.chat.completions.create({
+  const completion = await getLlm().chat.completions.create({
     model: MODEL,
     messages: [
       { role: "system", content: systemPrompt },
