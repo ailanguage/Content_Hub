@@ -121,7 +121,7 @@ export async function PATCH(
     if (description !== undefined) updates.description = description || null;
     if (descriptionCn !== undefined) updates.descriptionCn = descriptionCn || null;
 
-    if (requiredTagId !== undefined && channel.type === "task") {
+    if (requiredTagId !== undefined && ["task", "discussion"].includes(channel.type)) {
       if (requiredTagId) {
         // Validate tag exists
         const [tag] = await db

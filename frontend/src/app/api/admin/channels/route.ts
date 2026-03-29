@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
         description: description || null,
         descriptionCn: descriptionCn || null,
         isFixed: false,
-        requiredTagId: type === "task" ? requiredTagId || null : null,
+        requiredTagId: requiredTagId || null,
       })
       .returning();
 

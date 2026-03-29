@@ -78,7 +78,7 @@ export async function GET() {
       channels: visibleChannels.map((ch) => {
         // Determine if user has access (can interact) with this channel
         let hasAccess = true;
-        if (ch.type === "task" && ch.requiredTagId) {
+        if (ch.requiredTagId) {
           hasAccess = ["supermod", "admin"].includes(auth.role) || userTagIds.has(ch.requiredTagId);
         }
         return {

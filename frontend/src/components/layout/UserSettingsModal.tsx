@@ -2371,7 +2371,7 @@ function AdminChannelsSection() {
         nameCn: nameCn || undefined,
         description: description || undefined,
         descriptionCn: descriptionCn || undefined,
-        requiredTagId: type === "task" ? requiredTagId || undefined : undefined,
+        requiredTagId: requiredTagId || undefined,
         modUserIds: selectedMods.length > 0 ? selectedMods : undefined,
       }),
     });
@@ -2425,7 +2425,7 @@ function AdminChannelsSection() {
           nameCn: editNameCn || null,
           description: editDescription || null,
           descriptionCn: editDescriptionCn || null,
-          requiredTagId: ch.type === "task" ? (editRequiredTagId || null) : undefined,
+          requiredTagId: editRequiredTagId || null,
         }),
       }),
       fetch(`/api/admin/channels/${ch.id}/mods`, {
@@ -2576,9 +2576,9 @@ function AdminChannelsSection() {
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
-              {type === "task" && (
+              {(type === "task" || type === "discussion") && (
                 <div>
-                  <label className="block text-xs font-medium text-discord-text-muted mb-1">Required Tag (for task channels)</label>
+                  <label className="block text-xs font-medium text-discord-text-muted mb-1">Required Tag</label>
                   <select value={requiredTagId} onChange={(e) => setRequiredTagId(e.target.value)} className={inputCls}>
                     <option value="">None</option>
                     {allTags.map((tag) => (<option key={tag.id} value={tag.id}>{tag.name} {tag.nameCn ? `(${tag.nameCn})` : ""}</option>))}
@@ -2658,7 +2658,7 @@ function AdminChannelsSection() {
                 <div className="flex items-center gap-3 px-4 py-3">
                   <span className="text-discord-text font-medium text-sm">#{ch.name}</span>
                   <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${TYPE_BADGE[ch.type] || ""}`}>{ch.type}</span>
-                  {ch.type === "task" && ch.requiredTagId && (
+                  {ch.requiredTagId && (
                     <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300">
                       Tag: {getTagName(ch.requiredTagId)}
                     </span>
@@ -2712,7 +2712,7 @@ function AdminChannelsSection() {
                         <input value={editNameCn} onChange={(e) => setEditNameCn(e.target.value)} className={inputCls} />
                       </div>
                     </div>
-                    {ch.type === "task" && (
+                    {(ch.type === "task" || ch.type === "discussion") && (
                       <div>
                         <label className="block text-xs text-discord-text-muted mb-1">Required Tag</label>
                         <select value={editRequiredTagId} onChange={(e) => setEditRequiredTagId(e.target.value)} className={inputCls}>
