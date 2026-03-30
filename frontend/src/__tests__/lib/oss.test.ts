@@ -22,25 +22,22 @@ describe("isOssConfigured", () => {
   });
 
   it("returns false when OSS env vars are empty", () => {
-    // The module reads env at import-time, so isOssConfigured checks the
-    // module-level constants. Since we import at test-file level the values
-    // are already captured.  We test via the exported function directly.
-    // With default empty strings from test env, it returns false.
     expect(typeof isOssConfigured()).toBe("boolean");
   });
 });
 
 // ────────────────────────────────────────────────
-// generatePresignedPutUrl
+// generatePresignedPutUrl (V4 signatures)
 // ────────────────────────────────────────────────
 
 describe("generatePresignedPutUrl", () => {
-  it("returns a URL string with required query params", () => {
+  it("returns a URL string with V4 signature params (no OSSAccessKeyId)", () => {
     const url = generatePresignedPutUrl("deliverables/user1/abc.jpg", "image/jpeg", 600);
     expect(typeof url).toBe("string");
-    expect(url).toContain("OSSAccessKeyId=");
-    expect(url).toContain("Expires=");
-    expect(url).toContain("Signature=");
+    // V4 uses x-oss-signature, NOT OSSAccessKeyId
+    expect(url).not.toContain("OSSAccessKeyId=");
+    expect(url).toContain("x-oss-signature=");
+    expect(url).toContain("x-oss-credential=");
     expect(url).toContain("deliverables/user1/abc.jpg");
   });
 
@@ -53,55 +50,50 @@ describe("generatePresignedPutUrl", () => {
   it("generates different signatures for different content types", () => {
     const url1 = generatePresignedPutUrl("file.bin", "image/png", 600);
     const url2 = generatePresignedPutUrl("file.bin", "audio/mpeg", 600);
-    // Signatures should differ because content type is part of the string-to-sign
-    const sig1 = new URL(url1).searchParams.get("Signature");
-    const sig2 = new URL(url2).searchParams.get("Signature");
+    const sig1 = new URL(url1).searchParams.get("x-oss-signature");
+    const sig2 = new URL(url2).searchParams.get("x-oss-signature");
     expect(sig1).not.toBe(sig2);
   });
 
   it("generates different signatures for different object keys", () => {
     const url1 = generatePresignedPutUrl("a.jpg", "image/jpeg", 600);
     const url2 = generatePresignedPutUrl("b.jpg", "image/jpeg", 600);
-    const sig1 = new URL(url1).searchParams.get("Signature");
-    const sig2 = new URL(url2).searchParams.get("Signature");
+    const sig1 = new URL(url1).searchParams.get("x-oss-signature");
+    const sig2 = new URL(url2).searchParams.get("x-oss-signature");
     expect(sig1).not.toBe(sig2);
   });
 
-  it("sets expiry in the future", () => {
-    const now = Math.floor(Date.now() / 1000);
+  it("sets x-oss-expires", () => {
     const url = generatePresignedPutUrl("test.jpg", "image/jpeg", 300);
-    const expires = Number(new URL(url).searchParams.get("Expires"));
-    expect(expires).toBeGreaterThanOrEqual(now + 299);
-    expect(expires).toBeLessThanOrEqual(now + 301);
+    const expires = new URL(url).searchParams.get("x-oss-expires");
+    expect(expires).toBe("300");
   });
 });
 
 // ────────────────────────────────────────────────
-// generatePresignedGetUrl
+// generatePresignedGetUrl (V4 signatures)
 // ────────────────────────────────────────────────
 
 describe("generatePresignedGetUrl", () => {
-  it("returns a URL string with required query params", () => {
+  it("returns a URL string with V4 signature params (no OSSAccessKeyId)", () => {
     const url = generatePresignedGetUrl("deliverables/user1/abc.jpg", 3600);
-    expect(url).toContain("OSSAccessKeyId=");
-    expect(url).toContain("Expires=");
-    expect(url).toContain("Signature=");
+    expect(url).not.toContain("OSSAccessKeyId=");
+    expect(url).toContain("x-oss-signature=");
+    expect(url).toContain("x-oss-credential=");
   });
 
   it("generates a GET signature different from PUT signature for same key", () => {
     const putUrl = generatePresignedPutUrl("same.jpg", "image/jpeg", 600);
     const getUrl = generatePresignedGetUrl("same.jpg", 600);
-    const putSig = new URL(putUrl).searchParams.get("Signature");
-    const getSig = new URL(getUrl).searchParams.get("Signature");
+    const putSig = new URL(putUrl).searchParams.get("x-oss-signature");
+    const getSig = new URL(getUrl).searchParams.get("x-oss-signature");
     expect(putSig).not.toBe(getSig);
   });
 
   it("defaults to 3600 seconds expiry", () => {
-    const now = Math.floor(Date.now() / 1000);
     const url = generatePresignedGetUrl("test.jpg");
-    const expires = Number(new URL(url).searchParams.get("Expires"));
-    expect(expires).toBeGreaterThanOrEqual(now + 3599);
-    expect(expires).toBeLessThanOrEqual(now + 3601);
+    const expires = new URL(url).searchParams.get("x-oss-expires");
+    expect(expires).toBe("3600");
   });
 });
 

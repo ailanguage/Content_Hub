@@ -97,6 +97,7 @@ export function FileUpload({
       try {
         // Try OSS presigned upload first
         let ossSuccess = false;
+        let canFallback = true; // only fallback on infra errors, not validation
         try {
           const presignRes = await fetch("/api/upload/presign", {
             method: "POST",
@@ -135,7 +136,7 @@ export function FileUpload({
               };
               xhr.onerror = () => {
                 console.warn(`OSS PUT network error for ${file.name} — may be CORS`);
-                reject(new Error("Network error"));
+                reject(new Error(t("networkError")));
               };
               xhr.send(file);
             });
@@ -154,8 +155,20 @@ export function FileUpload({
               size: file.size,
               objectKey,
             };
+          } else {
+            // Presign returned an error — check if it's a validation rejection
+            const errData = await presignRes.json().catch(() => null);
+            const errMsg = errData?.error || "";
+            if (presignRes.status === 400 || presignRes.status === 401) {
+              // Validation / auth error — don't fallback, show the specific message
+              canFallback = false;
+              throw new Error(errMsg || t("uploadFailed"));
+            }
+            // 503 (OSS not configured) or 5xx — allow fallback to local
+            console.warn(`Presign failed (${presignRes.status}): ${errMsg}`);
           }
-        } catch (ossErr) {
+        } catch (ossErr: any) {
+          if (!canFallback) throw ossErr;
           console.warn(`OSS upload failed for ${file.name}, falling back to local:`, ossErr);
         }
 
@@ -171,8 +184,8 @@ export function FileUpload({
         });
 
         if (!localRes.ok) {
-          const data = await localRes.json();
-          throw new Error(data.error || "Upload failed");
+          const data = await localRes.json().catch(() => null);
+          throw new Error(data?.error || t("uploadFailed"));
         }
 
         const data = await localRes.json();

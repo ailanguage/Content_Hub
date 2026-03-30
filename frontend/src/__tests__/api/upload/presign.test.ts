@@ -30,13 +30,13 @@ beforeEach(() => jest.clearAllMocks());
 
 describe("POST /api/upload/presign", () => {
   it("returns 401 when not authenticated", async () => {
-    (getAuthFromCookies as jest.Mock).mockResolvedValue(null);
+    (getAuthFromCookies as jest.Mock).mockReturnValue(null);
     const res = await POST(makeReq({ fileName: "test.jpg", contentType: "image/jpeg", fileSize: 1000 }));
     expect(res.status).toBe(401);
   });
 
   it("returns 503 when OSS is not configured", async () => {
-    (getAuthFromCookies as jest.Mock).mockResolvedValue({ userId: "u1", role: "creator" });
+    (getAuthFromCookies as jest.Mock).mockReturnValue({ userId: "u1", role: "creator" });
     (isOssConfigured as jest.Mock).mockReturnValue(false);
 
     const res = await POST(makeReq({ fileName: "test.jpg", contentType: "image/jpeg", fileSize: 1000 }));
@@ -46,7 +46,7 @@ describe("POST /api/upload/presign", () => {
   });
 
   it("returns 400 when required fields are missing", async () => {
-    (getAuthFromCookies as jest.Mock).mockResolvedValue({ userId: "u1", role: "creator" });
+    (getAuthFromCookies as jest.Mock).mockReturnValue({ userId: "u1", role: "creator" });
     (isOssConfigured as jest.Mock).mockReturnValue(true);
 
     const res = await POST(makeReq({ fileName: "test.jpg" }));
@@ -56,7 +56,7 @@ describe("POST /api/upload/presign", () => {
   });
 
   it("returns 400 for disallowed file type", async () => {
-    (getAuthFromCookies as jest.Mock).mockResolvedValue({ userId: "u1", role: "creator" });
+    (getAuthFromCookies as jest.Mock).mockReturnValue({ userId: "u1", role: "creator" });
     (isOssConfigured as jest.Mock).mockReturnValue(true);
 
     const res = await POST(makeReq({
@@ -70,7 +70,7 @@ describe("POST /api/upload/presign", () => {
   });
 
   it("returns 400 for oversized file (>500MB)", async () => {
-    (getAuthFromCookies as jest.Mock).mockResolvedValue({ userId: "u1", role: "creator" });
+    (getAuthFromCookies as jest.Mock).mockReturnValue({ userId: "u1", role: "creator" });
     (isOssConfigured as jest.Mock).mockReturnValue(true);
 
     const res = await POST(makeReq({
@@ -84,7 +84,7 @@ describe("POST /api/upload/presign", () => {
   });
 
   it("returns presigned URL for valid request", async () => {
-    (getAuthFromCookies as jest.Mock).mockResolvedValue({ userId: "user-1", role: "creator" });
+    (getAuthFromCookies as jest.Mock).mockReturnValue({ userId: "user-1", role: "creator" });
     (isOssConfigured as jest.Mock).mockReturnValue(true);
     (generatePresignedPutUrl as jest.Mock).mockReturnValue("https://bucket.oss.com/deliverables/user-1/abc.jpg?signed");
 
@@ -102,7 +102,7 @@ describe("POST /api/upload/presign", () => {
   });
 
   it("uses task-attachments folder for task-attachment context", async () => {
-    (getAuthFromCookies as jest.Mock).mockResolvedValue({ userId: "user-1", role: "admin" });
+    (getAuthFromCookies as jest.Mock).mockReturnValue({ userId: "user-1", role: "admin" });
     (isOssConfigured as jest.Mock).mockReturnValue(true);
     (generatePresignedPutUrl as jest.Mock).mockReturnValue("https://signed-url");
 
@@ -118,7 +118,7 @@ describe("POST /api/upload/presign", () => {
   });
 
   it("allows all valid MIME types (images, audio, video, docs)", async () => {
-    (getAuthFromCookies as jest.Mock).mockResolvedValue({ userId: "u1", role: "creator" });
+    (getAuthFromCookies as jest.Mock).mockReturnValue({ userId: "u1", role: "creator" });
     (isOssConfigured as jest.Mock).mockReturnValue(true);
     (generatePresignedPutUrl as jest.Mock).mockReturnValue("https://signed");
 
