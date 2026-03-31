@@ -8,6 +8,7 @@ import { Spinner, ButtonSpinner } from "@/components/ui/Spinner";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { FileUpload } from "@/components/ui/FileUpload";
 import { DeliverableSlotEditor } from "@/components/ui/DeliverableSlotEditor";
+import { TranslateButton } from "@/components/ui/TranslateButton";
 import type { DeliverableSlot } from "@/types/deliverable-slot";
 import { AdminTrainingSection } from "@/components/admin/AdminTrainingSection";
 import { LessonEditor } from "@/components/admin/LessonEditor";
@@ -1075,11 +1076,17 @@ function AdminTagsSection() {
         {error && <div className="text-red-400 text-sm mb-3">{error}</div>}
         <div className="grid grid-cols-2 gap-3 mb-3">
           <div>
-            <label className="block text-xs font-medium text-discord-text-muted mb-1.5">{ta("nameEn")}</label>
+            <div className="flex items-center gap-2 mb-1.5">
+              <label className="text-xs font-medium text-discord-text-muted">{ta("nameEn")}</label>
+              <TranslateButton sourceText={nameCn} from="zh" onTranslated={setName} context="tag name — keep it short" />
+            </div>
             <input type="text" value={name} onChange={(e) => setName(e.target.value)} required className="w-full px-3 py-2 bg-discord-bg rounded-md text-sm text-discord-text focus:outline-none focus:ring-2 focus:ring-discord-accent border border-discord-bg-darker" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-discord-text-muted mb-1.5">{ta("nameCn")}</label>
+            <div className="flex items-center gap-2 mb-1.5">
+              <label className="text-xs font-medium text-discord-text-muted">{ta("nameCn")}</label>
+              <TranslateButton sourceText={name} from="en" onTranslated={setNameCn} context="tag name — keep it short" />
+            </div>
             <input type="text" value={nameCn} onChange={(e) => setNameCn(e.target.value)} className="w-full px-3 py-2 bg-discord-bg rounded-md text-sm text-discord-text focus:outline-none focus:ring-2 focus:ring-discord-accent border border-discord-bg-darker" />
           </div>
         </div>
@@ -1529,16 +1536,25 @@ function AdminTasksSection() {
               </select>
             </div>
             <div className="col-span-2">
-              <label className="block text-xs text-discord-text-muted mb-1">{ta("titleEn")}</label>
+              <div className="flex items-center gap-2 mb-1">
+                <label className="text-xs text-discord-text-muted">{ta("titleEn")}</label>
+                <TranslateButton sourceText={titleCn} from="zh" onTranslated={setTitle} context="task title — keep it concise" />
+              </div>
               <input value={title} onChange={(e) => setTitle(e.target.value)} className="w-full p-2 bg-discord-bg border border-discord-border rounded text-sm text-discord-text focus:outline-none" placeholder="e.g. Voice Recording #42 — English Narration" />
             </div>
             <div className="col-span-2">
-              <label className="block text-xs text-discord-text-muted mb-1">{ta("titleCn")}</label>
+              <div className="flex items-center gap-2 mb-1">
+                <label className="text-xs text-discord-text-muted">{ta("titleCn")}</label>
+                <TranslateButton sourceText={title} from="en" onTranslated={setTitleCn} context="task title — keep it concise" />
+              </div>
               <input value={titleCn} onChange={(e) => setTitleCn(e.target.value)} className="w-full p-2 bg-discord-bg border border-discord-border rounded text-sm text-discord-text focus:outline-none" />
             </div>
             <div className="col-span-2">
               <div className="flex items-center justify-between mb-1">
-                <label className="text-xs text-discord-text-muted">{ta("descriptionEn")}</label>
+                <div className="flex items-center gap-2">
+                  <label className="text-xs text-discord-text-muted">{ta("descriptionEn")}</label>
+                  <TranslateButton sourceText={descriptionCn} from="zh" onTranslated={setDescription} context="task description — may contain Markdown" />
+                </div>
                 <button type="button" onClick={() => setPreviewDescEn(!previewDescEn)} className="text-[10px] px-2 py-0.5 rounded bg-discord-bg-hover text-discord-text-muted hover:text-discord-text transition">
                   {previewDescEn ? ta("edit") : ta("preview")}
                 </button>
@@ -1551,7 +1567,10 @@ function AdminTasksSection() {
             </div>
             <div className="col-span-2">
               <div className="flex items-center justify-between mb-1">
-                <label className="text-xs text-discord-text-muted">{ta("descriptionCn")}</label>
+                <div className="flex items-center gap-2">
+                  <label className="text-xs text-discord-text-muted">{ta("descriptionCn")}</label>
+                  <TranslateButton sourceText={description} from="en" onTranslated={setDescriptionCn} context="task description — may contain Markdown" />
+                </div>
                 <button type="button" onClick={() => setPreviewDescCn(!previewDescCn)} className="text-[10px] px-2 py-0.5 rounded bg-discord-bg-hover text-discord-text-muted hover:text-discord-text transition">
                   {previewDescCn ? ta("edit") : ta("preview")}
                 </button>
@@ -2027,11 +2046,17 @@ function AdminTemplatesSection() {
       </h3>
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-xs text-discord-text-muted mb-1">{ta("templateName")}</label>
+          <div className="flex items-center gap-2 mb-1">
+            <label className="text-xs text-discord-text-muted">{ta("templateName")}</label>
+            <TranslateButton sourceText={templateForm.nameCn} from="zh" onTranslated={(v) => setTemplateForm({ ...templateForm, name: v })} context="task template name — keep it short" />
+          </div>
           <input value={templateForm.name} onChange={(e) => setTemplateForm({ ...templateForm, name: e.target.value })} className="w-full p-2 bg-discord-bg border border-discord-border rounded text-sm text-discord-text focus:outline-none" placeholder="e.g. Voiceover Recording" />
         </div>
         <div>
-          <label className="block text-xs text-discord-text-muted mb-1">{ta("nameCn")}</label>
+          <div className="flex items-center gap-2 mb-1">
+            <label className="text-xs text-discord-text-muted">{ta("nameCn")}</label>
+            <TranslateButton sourceText={templateForm.name} from="en" onTranslated={(v) => setTemplateForm({ ...templateForm, nameCn: v })} context="task template name — keep it short" />
+          </div>
           <input value={templateForm.nameCn} onChange={(e) => setTemplateForm({ ...templateForm, nameCn: e.target.value })} className="w-full p-2 bg-discord-bg border border-discord-border rounded text-sm text-discord-text focus:outline-none" placeholder="中文模板名称" />
         </div>
         <div>
@@ -2055,11 +2080,17 @@ function AdminTemplatesSection() {
           <input type="number" min="1" value={templateForm.maxAttempts} onChange={(e) => setTemplateForm({ ...templateForm, maxAttempts: e.target.value })} className="w-full p-2 bg-discord-bg border border-discord-border rounded text-sm text-discord-text focus:outline-none" />
         </div>
         <div className="col-span-2">
-          <label className="block text-xs text-discord-text-muted mb-1">{ta("descriptionEnLabel")}</label>
+          <div className="flex items-center gap-2 mb-1">
+            <label className="text-xs text-discord-text-muted">{ta("descriptionEnLabel")}</label>
+            <TranslateButton sourceText={templateForm.descriptionCn} from="zh" onTranslated={(v) => setTemplateForm({ ...templateForm, description: v })} context="task template description — may contain Markdown" />
+          </div>
           <textarea value={templateForm.description} onChange={(e) => setTemplateForm({ ...templateForm, description: e.target.value })} rows={3} className="w-full p-2 bg-discord-bg border border-discord-border rounded text-sm text-discord-text focus:outline-none resize-none" placeholder="Task requirements and instructions (Markdown)..." />
         </div>
         <div className="col-span-2">
-          <label className="block text-xs text-discord-text-muted mb-1">{ta("descriptionCnLabel")}</label>
+          <div className="flex items-center gap-2 mb-1">
+            <label className="text-xs text-discord-text-muted">{ta("descriptionCnLabel")}</label>
+            <TranslateButton sourceText={templateForm.description} from="en" onTranslated={(v) => setTemplateForm({ ...templateForm, descriptionCn: v })} context="task template description — may contain Markdown" />
+          </div>
           <textarea value={templateForm.descriptionCn} onChange={(e) => setTemplateForm({ ...templateForm, descriptionCn: e.target.value })} rows={3} className="w-full p-2 bg-discord-bg border border-discord-border rounded text-sm text-discord-text focus:outline-none resize-none" placeholder="中文任务说明 (支持 Markdown)..." />
         </div>
         <div>
@@ -2567,11 +2598,17 @@ function AdminChannelsSection() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-medium text-discord-text-muted mb-1">{ta("channelNameEn")}</label>
+                <div className="flex items-center gap-2 mb-1">
+                  <label className="text-xs font-medium text-discord-text-muted">{ta("channelNameEn")}</label>
+                  <TranslateButton sourceText={nameCn} from="zh" onTranslated={setName} context="channel name — keep it short, like a Discord channel name" />
+                </div>
                 <input value={name} onChange={(e) => setName(e.target.value)} placeholder="#channel-name" className={inputCls} />
               </div>
               <div>
-                <label className="block text-xs font-medium text-discord-text-muted mb-1">{ta("channelNameCn")}</label>
+                <div className="flex items-center gap-2 mb-1">
+                  <label className="text-xs font-medium text-discord-text-muted">{ta("channelNameCn")}</label>
+                  <TranslateButton sourceText={name} from="en" onTranslated={setNameCn} context="channel name — keep it short, like a Discord channel name" />
+                </div>
                 <input value={nameCn} onChange={(e) => setNameCn(e.target.value)} placeholder="#频道名称" className={inputCls} />
               </div>
             </div>
@@ -2631,11 +2668,17 @@ function AdminChannelsSection() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-medium text-discord-text-muted mb-1">{ta("descriptionEnLabel")}</label>
+                <div className="flex items-center gap-2 mb-1">
+                  <label className="text-xs font-medium text-discord-text-muted">{ta("descriptionEnLabel")}</label>
+                  <TranslateButton sourceText={descriptionCn} from="zh" onTranslated={setDescription} context="channel description" />
+                </div>
                 <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} placeholder="Channel description..." className={inputCls + " resize-y"} />
               </div>
               <div>
-                <label className="block text-xs font-medium text-discord-text-muted mb-1">{ta("descriptionCnLabel")}</label>
+                <div className="flex items-center gap-2 mb-1">
+                  <label className="text-xs font-medium text-discord-text-muted">{ta("descriptionCnLabel")}</label>
+                  <TranslateButton sourceText={description} from="en" onTranslated={setDescriptionCn} context="channel description" />
+                </div>
                 <textarea value={descriptionCn} onChange={(e) => setDescriptionCn(e.target.value)} rows={3} placeholder="频道描述..." className={inputCls + " resize-y"} />
               </div>
             </div>
@@ -2713,11 +2756,17 @@ function AdminChannelsSection() {
                   <div className="px-4 pb-4 border-t border-discord-border pt-3 space-y-3">
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="block text-xs text-discord-text-muted mb-1">{ta("nameEn")}</label>
+                        <div className="flex items-center gap-2 mb-1">
+                          <label className="text-xs text-discord-text-muted">{ta("nameEn")}</label>
+                          <TranslateButton sourceText={editNameCn} from="zh" onTranslated={setEditName} context="channel name — keep it short" />
+                        </div>
                         <input value={editName} onChange={(e) => setEditName(e.target.value)} className={inputCls} />
                       </div>
                       <div>
-                        <label className="block text-xs text-discord-text-muted mb-1">{ta("nameCn")}</label>
+                        <div className="flex items-center gap-2 mb-1">
+                          <label className="text-xs text-discord-text-muted">{ta("nameCn")}</label>
+                          <TranslateButton sourceText={editName} from="en" onTranslated={setEditNameCn} context="channel name — keep it short" />
+                        </div>
                         <input value={editNameCn} onChange={(e) => setEditNameCn(e.target.value)} className={inputCls} />
                       </div>
                     </div>
@@ -2734,11 +2783,17 @@ function AdminChannelsSection() {
                     )}
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="block text-xs text-discord-text-muted mb-1">{ta("descriptionEnLabel")}</label>
+                        <div className="flex items-center gap-2 mb-1">
+                          <label className="text-xs text-discord-text-muted">{ta("descriptionEnLabel")}</label>
+                          <TranslateButton sourceText={editDescriptionCn} from="zh" onTranslated={setEditDescription} context="channel description" />
+                        </div>
                         <textarea value={editDescription} onChange={(e) => setEditDescription(e.target.value)} rows={2} className={inputCls + " resize-none"} />
                       </div>
                       <div>
-                        <label className="block text-xs text-discord-text-muted mb-1">{ta("descriptionCnLabel")}</label>
+                        <div className="flex items-center gap-2 mb-1">
+                          <label className="text-xs text-discord-text-muted">{ta("descriptionCnLabel")}</label>
+                          <TranslateButton sourceText={editDescription} from="en" onTranslated={setEditDescriptionCn} context="channel description" />
+                        </div>
                         <textarea value={editDescriptionCn} onChange={(e) => setEditDescriptionCn(e.target.value)} rows={2} className={inputCls + " resize-none"} />
                       </div>
                     </div>

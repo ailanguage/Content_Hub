@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Spinner } from "@/components/ui/Spinner";
+import { TranslateButton } from "@/components/ui/TranslateButton";
 
 interface LessonSummary {
   id: string;
@@ -49,6 +50,7 @@ export function AdminTrainingSection({
   const [newTitle, setNewTitle] = useState("");
   const [newTitleCn, setNewTitleCn] = useState("");
   const [newDescription, setNewDescription] = useState("");
+  const [newDescriptionCn, setNewDescriptionCn] = useState("");
 
   useEffect(() => {
     loadLessons();
@@ -79,12 +81,14 @@ export function AdminTrainingSection({
           title: newTitle.trim(),
           titleCn: newTitleCn.trim() || null,
           description: newDescription.trim() || null,
+          descriptionCn: newDescriptionCn.trim() || null,
         }),
       });
       if (res.ok) {
         setNewTitle("");
         setNewTitleCn("");
         setNewDescription("");
+        setNewDescriptionCn("");
         setShowCreateForm(false);
         await loadLessons();
       }
@@ -266,9 +270,10 @@ export function AdminTrainingSection({
           </h3>
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="text-xs text-discord-text-muted block mb-1">
-                Title (EN) *
-              </label>
+              <div className="flex items-center gap-2 mb-1">
+                <label className="text-xs text-discord-text-muted">Title (EN) *</label>
+                <TranslateButton sourceText={newTitleCn} from="zh" onTranslated={setNewTitle} context="lesson title — keep it short" />
+              </div>
               <input
                 type="text"
                 value={newTitle}
@@ -278,9 +283,10 @@ export function AdminTrainingSection({
               />
             </div>
             <div>
-              <label className="text-xs text-discord-text-muted block mb-1">
-                Title (CN)
-              </label>
+              <div className="flex items-center gap-2 mb-1">
+                <label className="text-xs text-discord-text-muted">Title (CN)</label>
+                <TranslateButton sourceText={newTitle} from="en" onTranslated={setNewTitleCn} context="lesson title — keep it short" />
+              </div>
               <input
                 type="text"
                 value={newTitleCn}
@@ -290,16 +296,31 @@ export function AdminTrainingSection({
               />
             </div>
           </div>
-          <div className="mb-4">
-            <label className="text-xs text-discord-text-muted block mb-1">
-              Description
-            </label>
-            <textarea
-              value={newDescription}
-              onChange={(e) => setNewDescription(e.target.value)}
-              className="w-full bg-discord-bg border border-discord-bg-darker/60 rounded px-3 py-2 text-sm text-discord-text h-20 resize-none"
-              placeholder="Brief description of this lesson"
-            />
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <label className="text-xs text-discord-text-muted">Description (EN)</label>
+                <TranslateButton sourceText={newDescriptionCn} from="zh" onTranslated={setNewDescription} context="lesson description" />
+              </div>
+              <textarea
+                value={newDescription}
+                onChange={(e) => setNewDescription(e.target.value)}
+                className="w-full bg-discord-bg border border-discord-bg-darker/60 rounded px-3 py-2 text-sm text-discord-text h-20 resize-none"
+                placeholder="Brief description of this lesson"
+              />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <label className="text-xs text-discord-text-muted">Description (CN)</label>
+                <TranslateButton sourceText={newDescription} from="en" onTranslated={setNewDescriptionCn} context="lesson description" />
+              </div>
+              <textarea
+                value={newDescriptionCn}
+                onChange={(e) => setNewDescriptionCn(e.target.value)}
+                className="w-full bg-discord-bg border border-discord-bg-darker/60 rounded px-3 py-2 text-sm text-discord-text h-20 resize-none"
+                placeholder="中文课程描述"
+              />
+            </div>
           </div>
           <div className="flex gap-2">
             <button

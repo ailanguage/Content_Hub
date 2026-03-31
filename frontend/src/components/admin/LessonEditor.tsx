@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Spinner } from "@/components/ui/Spinner";
+import { TranslateButton } from "@/components/ui/TranslateButton";
 
 interface TrainerPrompt {
   id: string;
@@ -583,12 +584,13 @@ export function LessonEditor({
               </h3>
             </div>
             <div className="p-5 space-y-4">
-              {/* Title + Description */}
+              {/* Title EN + CN */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-[10px] text-discord-text-muted uppercase tracking-wide block mb-1.5">
-                    Title
-                  </label>
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <label className="text-[10px] text-discord-text-muted uppercase tracking-wide">Title (EN)</label>
+                    <TranslateButton sourceText={settingsForm.titleCn} from="zh" onTranslated={(v) => setSettingsForm({ ...settingsForm, title: v })} context="lesson title — keep it short" />
+                  </div>
                   <input
                     type="text"
                     value={settingsForm.title}
@@ -599,14 +601,47 @@ export function LessonEditor({
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] text-discord-text-muted uppercase tracking-wide block mb-1.5">
-                    Description
-                  </label>
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <label className="text-[10px] text-discord-text-muted uppercase tracking-wide">Title (CN)</label>
+                    <TranslateButton sourceText={settingsForm.title} from="en" onTranslated={(v) => setSettingsForm({ ...settingsForm, titleCn: v })} context="lesson title — keep it short" />
+                  </div>
+                  <input
+                    type="text"
+                    value={settingsForm.titleCn}
+                    onChange={(e) =>
+                      setSettingsForm({ ...settingsForm, titleCn: e.target.value })
+                    }
+                    className="w-full bg-discord-bg border border-discord-bg-darker/60 rounded-lg px-4 py-2.5 text-sm text-discord-text"
+                  />
+                </div>
+              </div>
+
+              {/* Description EN + CN */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <label className="text-[10px] text-discord-text-muted uppercase tracking-wide">Description (EN)</label>
+                    <TranslateButton sourceText={settingsForm.descriptionCn} from="zh" onTranslated={(v) => setSettingsForm({ ...settingsForm, description: v })} context="lesson description" />
+                  </div>
                   <input
                     type="text"
                     value={settingsForm.description}
                     onChange={(e) =>
                       setSettingsForm({ ...settingsForm, description: e.target.value })
+                    }
+                    className="w-full bg-discord-bg border border-discord-bg-darker/60 rounded-lg px-4 py-2.5 text-sm text-discord-text"
+                  />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <label className="text-[10px] text-discord-text-muted uppercase tracking-wide">Description (CN)</label>
+                    <TranslateButton sourceText={settingsForm.description} from="en" onTranslated={(v) => setSettingsForm({ ...settingsForm, descriptionCn: v })} context="lesson description" />
+                  </div>
+                  <input
+                    type="text"
+                    value={settingsForm.descriptionCn}
+                    onChange={(e) =>
+                      setSettingsForm({ ...settingsForm, descriptionCn: e.target.value })
                     }
                     className="w-full bg-discord-bg border border-discord-bg-darker/60 rounded-lg px-4 py-2.5 text-sm text-discord-text"
                   />
@@ -685,6 +720,7 @@ function QuestionCard({
   onDelete: () => void;
 }) {
   const [prompt, setPrompt] = useState(question.prompt);
+  const [promptCn, setPromptCn] = useState(question.promptCn || "");
   const [points, setPoints] = useState(question.points);
   const [options, setOptions] = useState<string[]>(
     (question.options as { options?: string[] })?.options || []
@@ -772,7 +808,7 @@ function QuestionCard({
 
   function saveQuestion() {
     setSaving(true);
-    const updates: Record<string, unknown> = { prompt, points };
+    const updates: Record<string, unknown> = { prompt, promptCn: promptCn || null, points };
     if (question.type === "mc") {
       updates.options = { options };
       updates.correctAnswers = { correctIndex };
@@ -845,17 +881,33 @@ function QuestionCard({
       {!collapsed && <div className="p-4 space-y-4">
         {/* Question prompt (not shown for T/F or Upload — they have their own input) */}
         {question.type !== "tf" && question.type !== "upload" && (
-          <div>
-            <label className="text-[10px] text-discord-text-muted uppercase tracking-wide block mb-1.5">
-              Question Prompt
-            </label>
-            <input
-              type="text"
-              value={prompt}
-              onChange={(e) => { setPrompt(e.target.value); markDirty(); }}
-              className="w-full bg-discord-bg border border-discord-bg-darker/60 rounded-lg px-4 py-2.5 text-sm text-discord-text placeholder-discord-text-muted"
-              placeholder="Write your question here..."
-            />
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <div className="flex items-center gap-2 mb-1.5">
+                <label className="text-[10px] text-discord-text-muted uppercase tracking-wide">Prompt (EN)</label>
+                <TranslateButton sourceText={promptCn} from="zh" onTranslated={(v) => { setPrompt(v); markDirty(); }} context="test question prompt" />
+              </div>
+              <input
+                type="text"
+                value={prompt}
+                onChange={(e) => { setPrompt(e.target.value); markDirty(); }}
+                className="w-full bg-discord-bg border border-discord-bg-darker/60 rounded-lg px-4 py-2.5 text-sm text-discord-text placeholder-discord-text-muted"
+                placeholder="Write your question here..."
+              />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 mb-1.5">
+                <label className="text-[10px] text-discord-text-muted uppercase tracking-wide">Prompt (CN)</label>
+                <TranslateButton sourceText={prompt} from="en" onTranslated={(v) => { setPromptCn(v); markDirty(); }} context="test question prompt" />
+              </div>
+              <input
+                type="text"
+                value={promptCn}
+                onChange={(e) => { setPromptCn(e.target.value); markDirty(); }}
+                className="w-full bg-discord-bg border border-discord-bg-darker/60 rounded-lg px-4 py-2.5 text-sm text-discord-text placeholder-discord-text-muted"
+                placeholder="中文题目..."
+              />
+            </div>
           </div>
         )}
 
