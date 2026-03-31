@@ -84,6 +84,7 @@ export function TrainingView() {
   const [reviewTotalPrompts, setReviewTotalPrompts] = useState(0);
 
   const chatEndRef = useRef<HTMLDivElement>(null);
+  const trainingInputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     loadWelcome();
@@ -225,6 +226,7 @@ export function TrainingView() {
 
     const userMessage = inputText.trim();
     setInputText("");
+    if (trainingInputRef.current) trainingInputRef.current.style.height = "auto";
     setMessages((prev) => [...prev, { role: "student", content: userMessage }]);
     setSending(true);
 
@@ -612,8 +614,8 @@ export function TrainingView() {
             </div>
           ) : (
             <div className="flex gap-2">
-              <input
-                type="text"
+              <textarea
+                ref={trainingInputRef}
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 onKeyDown={(e) => {
@@ -622,9 +624,16 @@ export function TrainingView() {
                     sendReply();
                   }
                 }}
+                onInput={(e) => {
+                  const target = e.target as HTMLTextAreaElement;
+                  target.style.height = "auto";
+                  target.style.height = Math.min(target.scrollHeight, 150) + "px";
+                }}
                 disabled={sending}
-                className="flex-1 bg-discord-bg-dark rounded-lg px-4 py-3 text-sm text-discord-text placeholder-discord-text-muted disabled:opacity-50"
+                rows={1}
+                className="flex-1 bg-discord-bg-dark rounded-lg px-4 py-3 text-sm text-discord-text placeholder-discord-text-muted disabled:opacity-50 resize-none overflow-y-auto"
                 placeholder="Type your answer..."
+                style={{ maxHeight: 150 }}
               />
               <button
                 onClick={sendReply}

@@ -196,7 +196,7 @@ function ChannelPageContent() {
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const tasksFetchRef = useRef<AbortController | null>(null);
   const fetchTasksRef = useRef<() => void>(() => { });
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [appeals, setAppeals] = useState<any[]>([]);
 
@@ -232,9 +232,14 @@ function ChannelPageContent() {
   }, [mentionQuery]);
 
   // Detect @ in input and extract query
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const value = e.target.value.slice(0, 2000);
     setNewMessage(value);
+
+    // Auto-resize textarea on content change (handles paste, etc.)
+    const target = e.target as HTMLTextAreaElement;
+    target.style.height = "auto";
+    target.style.height = Math.min(target.scrollHeight, 150) + "px";
 
     const cursorPos = e.target.selectionStart ?? value.length;
     const textBeforeCursor = value.slice(0, cursorPos);
@@ -441,6 +446,7 @@ function ChannelPageContent() {
           return [...prev, data.message];
         });
         setNewMessage("");
+        if (inputRef.current) inputRef.current.style.height = "auto";
         setReplyingTo(null);
         setPrivateTo(null);
       }
@@ -809,7 +815,7 @@ function ChannelPageContent() {
               </div>
             </div>
           ) : (
-            <p className={`text-discord-text-secondary wrap-break-word ${isReply ? "text-xs" : "text-sm"}`}>
+            <p className={`text-discord-text-secondary wrap-break-word whitespace-pre-wrap ${isReply ? "text-xs" : "text-sm"}`}>
               {renderContentWithMentions(msg.content)}
             </p>
           )}
@@ -1082,9 +1088,8 @@ function ChannelPageContent() {
                   ))}
                 </div>
               )}
-              <input
+              <textarea
                 ref={inputRef}
-                type="text"
                 value={newMessage}
                 onChange={handleInputChange}
                 onKeyDown={(e) => {
@@ -1104,9 +1109,15 @@ function ChannelPageContent() {
                       setMentionQuery(null);
                       setMentionResults([]);
                     }
+                  } else if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    if (newMessage.trim() && !sending) {
+                      handleSend(e as unknown as React.FormEvent);
+                    }
                   }
                 }}
                 maxLength={2000}
+                rows={1}
                 placeholder={
                   privateTo
                     ? t("privateMessagePlaceholder", { name: privateTo.displayName || privateTo.username })
@@ -1114,8 +1125,9 @@ function ChannelPageContent() {
                       ? t("replyToPlaceholder", { name: replyingTo.user?.displayName || replyingTo.user?.username })
                       : t("messageChannel", { channel: channel?.name || slug })
                 }
-                className={`w-full p-3 bg-discord-bg-hover text-sm text-discord-text placeholder-discord-text-muted focus:outline-none pr-16 ${replyingTo || privateTo ? "rounded-b-lg rounded-t-none" : "rounded-lg"
+                className={`w-full p-3 bg-discord-bg-hover text-sm text-discord-text placeholder-discord-text-muted focus:outline-none pr-16 resize-none overflow-y-auto ${replyingTo || privateTo ? "rounded-b-lg rounded-t-none" : "rounded-lg"
                   }`}
+                style={{ maxHeight: 150 }}
               />
               {newMessage.length > 1800 && (
                 <span className={`absolute right-2 top-1/2 -translate-y-1/2 text-xs font-mono ${newMessage.length >= 2000 ? "text-discord-red" : "text-discord-text-muted"}`}>
