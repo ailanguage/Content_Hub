@@ -5,6 +5,7 @@ import { and, eq, sql } from "drizzle-orm";
 import { verifyOtp } from "@/lib/otp-store";
 import { createJWT } from "@/lib/auth-edge";
 import { hashSync } from "bcryptjs";
+import { apiError } from "@/lib/api-error";
 
 export async function POST(req: NextRequest) {
   try {
@@ -144,7 +145,6 @@ export async function POST(req: NextRequest) {
 
     return response;
   } catch (error) {
-    console.error("[signup-phone] error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return apiError("Phone signup", error);
   }
 }

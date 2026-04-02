@@ -12,6 +12,7 @@ import {
 import { publishNotification } from "@/lib/ws-publish";
 import { getAuthFromCookies } from "@/lib/auth";
 import { eq, and, sql } from "drizzle-orm";
+import { apiError } from "@/lib/api-error";
 
 // POST /api/training/reviews/:id — approve or reject an upload submission
 export async function POST(
@@ -268,10 +269,6 @@ export async function POST(
       tagId,
     });
   } catch (err) {
-    console.error("POST /api/training/reviews/:id error:", err);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Review upload submission", err);
   }
 }

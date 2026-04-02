@@ -15,6 +15,7 @@ import { publishSystemMessage, publishTaskUpdate, publishNotification } from "@/
 import { webhookAttemptSubmitted } from "@/lib/backend-webhook";
 import { validateDeliverablesError } from "@/lib/validate-deliverables";
 import { validateDeliverablesAsync } from "@/lib/validate-deliverables-server";
+import { apiError } from "@/lib/api-error";
 import type { DeliverableSlot } from "@/types/deliverable-slot";
 
 // POST /api/tasks/[taskId]/attempts — submit an attempt (creator)
@@ -268,10 +269,6 @@ export async function POST(
 
     return NextResponse.json({ attempt: newAttempt }, { status: 201 });
   } catch (error) {
-    console.error("Submit attempt error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Submit attempt", error);
   }
 }

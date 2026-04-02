@@ -21,6 +21,7 @@ import {
   generateWelcome,
   generateCongrats,
 } from "@/lib/llm";
+import { apiError } from "@/lib/api-error";
 
 // POST /api/training/session — all learner training actions
 export async function POST(req: NextRequest) {
@@ -57,11 +58,7 @@ export async function POST(req: NextRequest) {
         );
     }
   } catch (err) {
-    console.error("POST /api/training/session error:", err);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Training session", err);
   }
 }
 

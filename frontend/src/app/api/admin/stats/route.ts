@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { users, inviteCodes, tags, channels } from "@/db/schema";
 import { getAuthFromCookies } from "@/lib/auth";
+import { apiError } from "@/lib/api-error";
 import { eq, count } from "drizzle-orm";
 
 export async function GET() {
@@ -29,10 +30,6 @@ export async function GET() {
       totalChannels: channelCount.value,
     });
   } catch (error) {
-    console.error("Admin stats error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Fetch admin stats", error);
   }
 }

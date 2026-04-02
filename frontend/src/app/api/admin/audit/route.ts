@@ -10,6 +10,7 @@ import {
   notifications,
 } from "@/db/schema";
 import { getAuthFromCookies } from "@/lib/auth";
+import { apiError } from "@/lib/api-error";
 import { eq, and, desc } from "drizzle-orm";
 import {
   publishWalletUpdate,
@@ -56,11 +57,7 @@ export async function GET() {
 
     return NextResponse.json({ auditItems: approvedTasks });
   } catch (error) {
-    console.error("Audit list error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Fetch audit log", error);
   }
 }
 
@@ -191,10 +188,6 @@ export async function POST(req: NextRequest) {
       message: "Approval reversed, task reopened",
     });
   } catch (error) {
-    console.error("Audit reversal error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Reverse audit approval", error);
   }
 }

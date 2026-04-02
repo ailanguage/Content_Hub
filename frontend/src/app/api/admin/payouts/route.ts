@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { ledgerEntries, users, notifications, tasks, attempts, channels } from "@/db/schema";
 import { getAuthFromCookies } from "@/lib/auth";
+import { apiError } from "@/lib/api-error";
 import { eq, ne, and, inArray } from "drizzle-orm";
 
 // GET /api/admin/payouts — get payout summary (admin only)
@@ -123,11 +124,7 @@ export async function GET() {
 
     return NextResponse.json({ payouts: payoutSummary });
   } catch (error) {
-    console.error("Get payouts error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Fetch payout summary", error);
   }
 }
 
@@ -234,10 +231,6 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ results });
   } catch (error) {
-    console.error("Execute payouts error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Execute payouts", error);
   }
 }

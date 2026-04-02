@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { tasks, users, channelMods } from "@/db/schema";
 import { getAuthFromCookies } from "@/lib/auth";
 import { eq, and } from "drizzle-orm";
+import { apiError } from "@/lib/api-error";
 
 // POST /api/tasks/[taskId]/claim-review — claim a task's review queue
 export async function POST(
@@ -82,11 +83,7 @@ export async function POST(
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Claim task review error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Claim task review", error);
   }
 }
 
@@ -136,10 +133,6 @@ export async function DELETE(
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Release task review claim error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Release task review claim", error);
   }
 }

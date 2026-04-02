@@ -4,6 +4,7 @@ import { users } from "@/db/schema";
 import { getAuthFromCookies } from "@/lib/auth";
 import { eq } from "drizzle-orm";
 import { moderateBio } from "@/lib/llm";
+import { apiError } from "@/lib/api-error";
 
 export async function PUT(req: NextRequest) {
   try {
@@ -52,10 +53,6 @@ export async function PUT(req: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("Profile update error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Update profile", error);
   }
 }

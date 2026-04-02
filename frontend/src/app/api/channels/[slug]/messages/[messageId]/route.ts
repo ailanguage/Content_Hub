@@ -4,6 +4,7 @@ import { channels, messages, users } from "@/db/schema";
 import { getAuthFromCookies } from "@/lib/auth";
 import { wsPublish } from "@/lib/ws-publish";
 import { eq, and } from "drizzle-orm";
+import { apiError } from "@/lib/api-error";
 
 type Params = { params: Promise<{ slug: string; messageId: string }> };
 
@@ -130,8 +131,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
       message: { id: updated.id, content: updated.content, updatedAt: updated.updatedAt },
     });
   } catch (error) {
-    console.error("Edit message error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return apiError("Edit message", error);
   }
 }
 
@@ -210,7 +210,6 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Delete message error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return apiError("Delete message", error);
   }
 }

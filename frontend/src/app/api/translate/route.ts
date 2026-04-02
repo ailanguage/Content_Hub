@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthFromCookies } from "@/lib/auth";
 import { translateText } from "@/lib/llm";
+import { apiError } from "@/lib/api-error";
 
 export async function POST(req: NextRequest) {
   try {
@@ -28,7 +29,6 @@ export async function POST(req: NextRequest) {
       context: context || null,
     });
   } catch (error) {
-    console.error("[translate] error:", error);
-    return NextResponse.json({ error: "Translation failed" }, { status: 500 });
+    return apiError("Translate text", error);
   }
 }

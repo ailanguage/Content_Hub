@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { tasks, channels, users, messages, notifications, userTags } from "@/db/schema";
 import { eq, asc } from "drizzle-orm";
 import { publishSystemMessage, publishTaskUpdate } from "@/lib/ws-publish";
+import { apiError } from "@/lib/api-error";
 
 const BACKEND_API_KEY = process.env.BACKEND_API_KEY;
 
@@ -217,10 +218,6 @@ export async function POST(req: NextRequest) {
       { status: 201, headers: corsHeaders }
     );
   } catch (error) {
-    console.error("Task sync error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500, headers: corsHeaders }
-    );
+    return apiError("Sync task from backend", error, 500, corsHeaders);
   }
 }

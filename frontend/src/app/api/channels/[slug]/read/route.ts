@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { channels, channelReads, messages } from "@/db/schema";
 import { getAuthFromCookies } from "@/lib/auth";
 import { eq, and, desc } from "drizzle-orm";
+import { apiError } from "@/lib/api-error";
 
 export async function POST(
   _req: NextRequest,
@@ -67,10 +68,6 @@ export async function POST(
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Mark read error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Mark channel read", error);
   }
 }

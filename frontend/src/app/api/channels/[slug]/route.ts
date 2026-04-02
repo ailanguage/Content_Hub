@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { channels, messages, users } from "@/db/schema";
 import { eq, asc, sql, isNull } from "drizzle-orm";
 import { getAuthFromCookies } from "@/lib/auth";
+import { apiError } from "@/lib/api-error";
 
 export async function GET(
   _req: NextRequest,
@@ -98,10 +99,6 @@ export async function GET(
       })),
     });
   } catch (error) {
-    console.error("Channel fetch error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Fetch channel", error);
   }
 }

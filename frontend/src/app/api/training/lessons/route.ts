@@ -12,6 +12,7 @@ import {
 } from "@/db/schema";
 import { getAuthFromCookies } from "@/lib/auth";
 import { eq, sql, count, and, desc, asc } from "drizzle-orm";
+import { apiError } from "@/lib/api-error";
 
 // GET /api/training/lessons — list all lessons with stats (admin/supermod only)
 export async function GET() {
@@ -149,11 +150,7 @@ export async function GET() {
 
     return NextResponse.json(enriched);
   } catch (err) {
-    console.error("GET /api/training/lessons error:", err);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("List lessons", err);
   }
 }
 
@@ -182,11 +179,7 @@ export async function PUT(req: NextRequest) {
 
     return NextResponse.json({ ok: true });
   } catch (err) {
-    console.error("PUT /api/training/lessons reorder error:", err);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Reorder lessons", err);
   }
 }
 
@@ -234,10 +227,6 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(newLesson, { status: 201 });
   } catch (err) {
-    console.error("POST /api/training/lessons error:", err);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Create lesson", err);
   }
 }

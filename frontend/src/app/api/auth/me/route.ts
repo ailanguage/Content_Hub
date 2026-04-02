@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { users, sessions, userTags, tags } from "@/db/schema";
 import { getAuthFromCookies, createJWT } from "@/lib/auth";
 import { eq, and } from "drizzle-orm";
+import { apiError } from "@/lib/api-error";
 
 export async function GET() {
   try {
@@ -80,10 +81,6 @@ export async function GET() {
 
     return response;
   } catch (error) {
-    console.error("Me error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Get current user", error);
   }
 }

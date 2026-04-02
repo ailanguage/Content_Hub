@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { users } from "@/db/schema";
 import { getAuthFromCookies } from "@/lib/auth";
 import { eq } from "drizzle-orm";
+import { apiError } from "@/lib/api-error";
 
 export async function POST(req: NextRequest) {
   try {
@@ -64,10 +65,6 @@ export async function POST(req: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("Onboarding error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Complete onboarding", error);
   }
 }

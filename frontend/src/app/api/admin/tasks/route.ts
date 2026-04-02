@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { tasks, channels, users, attempts, channelMods } from "@/db/schema";
 import { getAuthFromCookies } from "@/lib/auth";
+import { apiError } from "@/lib/api-error";
 import { eq, desc, sql, inArray, and } from "drizzle-orm";
 
 // GET /api/admin/tasks — list all tasks (admin/mod/supermod)
@@ -109,10 +110,6 @@ export async function GET(req: NextRequest) {
       ...(modChannelIds.length > 0 ? { modChannelIds } : {}),
     });
   } catch (error) {
-    console.error("Admin list tasks error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Fetch admin tasks", error);
   }
 }

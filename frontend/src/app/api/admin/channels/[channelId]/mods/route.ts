@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { channels, channelMods, users } from "@/db/schema";
 import { getAuthFromCookies } from "@/lib/auth";
+import { apiError } from "@/lib/api-error";
 import { eq, and, inArray } from "drizzle-orm";
 
 // GET /api/admin/channels/[channelId]/mods — list current mods
@@ -53,11 +54,7 @@ export async function GET(
 
     return NextResponse.json({ mods });
   } catch (error) {
-    console.error("Get channel mods error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Fetch channel mods", error);
   }
 }
 
@@ -149,10 +146,6 @@ export async function PUT(
 
     return NextResponse.json({ mods });
   } catch (error) {
-    console.error("Update channel mods error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Update channel mods", error);
   }
 }

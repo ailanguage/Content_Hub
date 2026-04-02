@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { tags, userTags } from "@/db/schema";
 import { getAuthFromCookies } from "@/lib/auth";
+import { apiError } from "@/lib/api-error";
 import { eq, asc, count } from "drizzle-orm";
 
 export async function GET() {
@@ -18,11 +19,7 @@ export async function GET() {
 
     return NextResponse.json({ tags: allTags });
   } catch (error) {
-    console.error("Tags error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Fetch tags", error);
   }
 }
 
@@ -64,11 +61,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ tag: newTag });
   } catch (error) {
-    console.error("Create tag error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Create tag", error);
   }
 }
 
@@ -105,10 +98,6 @@ export async function DELETE(req: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Delete tag error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Delete tag", error);
   }
 }

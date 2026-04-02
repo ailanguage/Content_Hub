@@ -4,6 +4,7 @@ import { sessions } from "@/db/schema";
 import { getAuthFromCookies } from "@/lib/auth";
 import { eq } from "drizzle-orm";
 import { cookies } from "next/headers";
+import { apiError } from "@/lib/api-error";
 
 export async function POST() {
   try {
@@ -20,10 +21,6 @@ export async function POST() {
 
     return NextResponse.json({ message: "Logged out" });
   } catch (error) {
-    console.error("Logout error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Logout", error);
   }
 }

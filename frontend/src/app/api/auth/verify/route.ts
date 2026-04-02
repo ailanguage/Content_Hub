@@ -4,6 +4,7 @@ import { users, verificationTokens, sessions } from "@/db/schema";
 import { createJWT } from "@/lib/auth";
 import { eq, and, isNull } from "drizzle-orm";
 import { cookies } from "next/headers";
+import { apiError } from "@/lib/api-error";
 
 export async function GET(req: NextRequest) {
   try {
@@ -82,10 +83,6 @@ export async function GET(req: NextRequest) {
     // Redirect to onboarding after verification
     return NextResponse.redirect(new URL("/onboarding", req.nextUrl.origin));
   } catch (error) {
-    console.error("Verify error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Verify authentication", error);
   }
 }

@@ -12,6 +12,7 @@ import {
 import { getAuthFromCookies } from "@/lib/auth";
 import { eq, and, desc } from "drizzle-orm";
 import { publishMessage, publishNotification } from "@/lib/ws-publish";
+import { apiError } from "@/lib/api-error";
 
 /**
  * POST /api/appeals — Creator files an appeal on a rejected attempt
@@ -192,11 +193,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ appeal });
   } catch (error) {
-    console.error("Create appeal error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("File appeal", error);
   }
 }
 
@@ -353,10 +350,6 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ appeals: enriched });
   } catch (error) {
-    console.error("List appeals error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("List appeals", error);
   }
 }

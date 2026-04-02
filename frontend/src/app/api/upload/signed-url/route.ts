@@ -5,6 +5,7 @@ import {
   getObjectKeyFromUrl,
   generatePresignedGetUrl,
 } from "@/lib/oss";
+import { apiError } from "@/lib/api-error";
 
 /**
  * GET /api/upload/signed-url?url=<raw-oss-url>
@@ -48,10 +49,6 @@ export async function GET(req: NextRequest) {
     const signedUrl = generatePresignedGetUrl(objectKey, 3600); // 1 hour
     return NextResponse.json({ signedUrl });
   } catch (error) {
-    console.error("Signed URL error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Generate signed URL", error);
   }
 }

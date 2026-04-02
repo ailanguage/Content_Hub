@@ -14,6 +14,7 @@ import { getAuthFromCookies } from "@/lib/auth";
 import { eq, and, desc, asc, sql, inArray } from "drizzle-orm";
 import { publishSystemMessage, publishTaskUpdate } from "@/lib/ws-publish";
 import { translateText } from "@/lib/llm";
+import { apiError } from "@/lib/api-error";
 
 // GET /api/tasks — list tasks (with filters)
 export async function GET(req: NextRequest) {
@@ -322,11 +323,7 @@ export async function GET(req: NextRequest) {
       }),
     });
   } catch (error) {
-    console.error("List tasks error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("List tasks", error);
   }
 }
 
@@ -452,11 +449,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ task: newTask }, { status: 201 });
   } catch (error) {
-    console.error("Create task error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Create task", error);
   }
 }
 

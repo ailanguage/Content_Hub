@@ -5,6 +5,7 @@ import { getAuthFromCookies } from "@/lib/auth";
 import { publishMessage, publishNotification } from "@/lib/ws-publish";
 import { wsPublish } from "@/lib/ws-publish";
 import { eq, and, inArray, ne } from "drizzle-orm";
+import { apiError } from "@/lib/api-error";
 
 export async function POST(
   req: NextRequest,
@@ -254,10 +255,6 @@ export async function POST(
 
     return NextResponse.json({ message: messagePayload });
   } catch (error) {
-    console.error("Send message error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Send message", error);
   }
 }

@@ -4,6 +4,7 @@ import { users, sessions } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { verifyOtp } from "@/lib/otp-store";
 import { createJWT } from "@/lib/auth-edge";
+import { apiError } from "@/lib/api-error";
 
 export async function POST(req: NextRequest) {
   try {
@@ -66,7 +67,6 @@ export async function POST(req: NextRequest) {
 
     return response;
   } catch (error) {
-    console.error("[login-phone] error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return apiError("Phone login", error);
   }
 }

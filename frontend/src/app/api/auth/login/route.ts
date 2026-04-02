@@ -4,6 +4,7 @@ import { users, sessions } from "@/db/schema";
 import { verifyPassword, createJWT } from "@/lib/auth";
 import { eq } from "drizzle-orm";
 import { cookies } from "next/headers";
+import { apiError } from "@/lib/api-error";
 
 export async function POST(req: NextRequest) {
   try {
@@ -91,10 +92,6 @@ export async function POST(req: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("Login error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Login", error);
   }
 }

@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { channels, userTags, channelReads, messages, appeals } from "@/db/schema";
 import { getAuthFromCookies } from "@/lib/auth";
 import { eq, asc, and, gt, sql, inArray } from "drizzle-orm";
+import { apiError } from "@/lib/api-error";
 
 export async function GET() {
   try {
@@ -97,10 +98,6 @@ export async function GET() {
       }),
     });
   } catch (error) {
-    console.error("Channels error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("List channels", error);
   }
 }

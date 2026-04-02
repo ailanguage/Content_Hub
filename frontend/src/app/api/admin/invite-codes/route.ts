@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { inviteCodes, users } from "@/db/schema";
 import { getAuthFromCookies, generateInviteCode } from "@/lib/auth";
+import { apiError } from "@/lib/api-error";
 import { eq, desc } from "drizzle-orm";
 
 export async function GET() {
@@ -28,11 +29,7 @@ export async function GET() {
 
     return NextResponse.json({ codes });
   } catch (error) {
-    console.error("Invite codes error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Fetch invite codes", error);
   }
 }
 
@@ -62,11 +59,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ code: newCode });
   } catch (error) {
-    console.error("Create invite code error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Create invite code", error);
   }
 }
 
@@ -90,10 +83,6 @@ export async function PATCH(req: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Revoke invite code error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Revoke invite code", error);
   }
 }

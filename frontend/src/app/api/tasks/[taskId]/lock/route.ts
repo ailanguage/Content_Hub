@@ -4,6 +4,7 @@ import { tasks, users, channels, messages, notifications, attempts } from "@/db/
 import { getAuthFromCookies } from "@/lib/auth";
 import { eq, and } from "drizzle-orm";
 import { publishSystemMessage, publishTaskUpdate, publishNotification } from "@/lib/ws-publish";
+import { apiError } from "@/lib/api-error";
 
 /**
  * POST /api/tasks/[taskId]/lock — Lock a task for exclusive 48h revision by a specific creator.
@@ -143,7 +144,6 @@ export async function POST(
       lockExpiresAt: lockExpiresAt.toISOString(),
     });
   } catch (error) {
-    console.error("Lock task error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return apiError("Lock task", error);
   }
 }

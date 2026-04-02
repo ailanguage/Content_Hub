@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { ledgerEntries, users } from "@/db/schema";
 import { getAuthFromCookies } from "@/lib/auth";
+import { apiError } from "@/lib/api-error";
 import { eq, desc } from "drizzle-orm";
 
 // GET /api/admin/payouts/history — list all executed payouts (admin + supermod)
@@ -31,10 +32,6 @@ export async function GET() {
 
     return NextResponse.json({ history: allPayouts });
   } catch (error) {
-    console.error("Payout history error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Fetch payout history", error);
   }
 }

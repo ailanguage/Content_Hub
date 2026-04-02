@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { tasks, attempts, channels, messages, notifications, users } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import { publishSystemMessage, publishNotification, publishTaskUpdate } from "@/lib/ws-publish";
+import { apiError } from "@/lib/api-error";
 
 const BACKEND_API_KEY = process.env.BACKEND_API_KEY;
 
@@ -158,10 +159,6 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ ok: true, status });
   } catch (error) {
-    console.error("Auto-mod review error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Process auto-mod review", error);
   }
 }

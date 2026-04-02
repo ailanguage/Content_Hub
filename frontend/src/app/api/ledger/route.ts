@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { ledgerEntries, users } from "@/db/schema";
 import { getAuthFromCookies } from "@/lib/auth";
 import { eq, desc, sql, and } from "drizzle-orm";
+import { apiError } from "@/lib/api-error";
 
 // GET /api/ledger — get user's ledger / wallet info
 export async function GET(req: NextRequest) {
@@ -64,10 +65,6 @@ export async function GET(req: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("Ledger error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Fetch ledger", error);
   }
 }

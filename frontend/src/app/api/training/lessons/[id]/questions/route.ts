@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { testQuestions, tests } from "@/db/schema";
 import { getAuthFromCookies } from "@/lib/auth";
 import { eq, sql, asc } from "drizzle-orm";
+import { apiError } from "@/lib/api-error";
 
 // POST /api/training/lessons/:id/questions — create a test question
 export async function POST(
@@ -63,11 +64,7 @@ export async function POST(
 
     return NextResponse.json(newQuestion, { status: 201 });
   } catch (err) {
-    console.error("POST question error:", err);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Create question", err);
   }
 }
 
@@ -95,10 +92,6 @@ export async function PUT(
 
     return NextResponse.json({ reordered: true });
   } catch (err) {
-    console.error("PUT questions reorder error:", err);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Reorder questions", err);
   }
 }

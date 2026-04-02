@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { taskTemplates, users } from "@/db/schema";
 import { getAuthFromCookies } from "@/lib/auth";
+import { apiError } from "@/lib/api-error";
 import { desc, eq } from "drizzle-orm";
 
 // GET /api/templates — list all templates
@@ -37,8 +38,8 @@ export async function GET() {
       .orderBy(desc(taskTemplates.createdAt));
 
     return NextResponse.json({ templates: rows });
-  } catch {
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  } catch (error) {
+    return apiError("List templates", error);
   }
 }
 
@@ -79,7 +80,7 @@ export async function POST(req: Request) {
       .returning();
 
     return NextResponse.json({ template: created }, { status: 201 });
-  } catch {
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  } catch (error) {
+    return apiError("Create template", error);
   }
 }

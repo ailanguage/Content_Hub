@@ -1446,16 +1446,22 @@ function AdminTasksSection() {
     const url = isCreate ? "/api/templates" : `/api/templates/${editingTemplateId}`;
     const method = isCreate ? "POST" : "PATCH";
 
-    const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+    try {
+      const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
 
-    if (res.ok) {
-      setEditingTemplateId(null);
-      setShowTemplateForm(false);
-      setTemplateForm(emptyTemplateForm);
-      fetchTemplates();
-    } else {
-      const data = await res.json();
-      setTemplateFormError(data.error || ta("failedToSave"));
+      if (res.ok) {
+        setEditingTemplateId(null);
+        setShowTemplateForm(false);
+        setTemplateForm(emptyTemplateForm);
+        fetchTemplates();
+      } else {
+        const data = await res.json().catch(() => ({}));
+        const msg = data.error || ta("failedToSave");
+        const errorId = data.errorId ? ` [${data.errorId}]` : "";
+        setTemplateFormError(`${msg}${errorId}`);
+      }
+    } catch (err) {
+      setTemplateFormError(`Network error: ${err instanceof Error ? err.message : "Failed to reach server"}`);
     }
     setTemplateSaving(false);
   };

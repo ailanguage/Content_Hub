@@ -4,6 +4,7 @@ import { users, inviteCodes, verificationTokens } from "@/db/schema";
 import { hashPassword, generateVerificationToken } from "@/lib/auth";
 import { sendVerificationEmail } from "@/lib/email";
 import { eq, and, sql } from "drizzle-orm";
+import { apiError } from "@/lib/api-error";
 
 export async function POST(req: NextRequest) {
   try {
@@ -173,10 +174,6 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(response, { status: 201 });
   } catch (error) {
-    console.error("Signup error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Signup", error);
   }
 }

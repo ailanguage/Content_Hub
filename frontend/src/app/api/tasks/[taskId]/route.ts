@@ -4,6 +4,7 @@ import { tasks, channels, users, attempts, messages, notifications, userTags, ch
 import { getAuthFromCookies } from "@/lib/auth";
 import { eq, and, sql } from "drizzle-orm";
 import { publishSystemMessage, publishTaskUpdate } from "@/lib/ws-publish";
+import { apiError } from "@/lib/api-error";
 
 // GET /api/tasks/[taskId] — get task detail
 export async function GET(
@@ -75,11 +76,7 @@ export async function GET(
 
     return NextResponse.json({ task, attempts: taskAttempts });
   } catch (error) {
-    console.error("Get task error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Get task", error);
   }
 }
 
@@ -263,10 +260,6 @@ export async function PATCH(
 
     return NextResponse.json({ task: updated });
   } catch (error) {
-    console.error("Update task error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Update task", error);
   }
 }

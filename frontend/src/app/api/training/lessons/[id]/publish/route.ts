@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { lessons, trainerPrompts, tests, testQuestions } from "@/db/schema";
 import { getAuthFromCookies } from "@/lib/auth";
 import { eq, sql, and } from "drizzle-orm";
+import { apiError } from "@/lib/api-error";
 
 // PUT /api/training/lessons/:id/publish — publish or unpublish a lesson
 export async function PUT(
@@ -94,10 +95,6 @@ export async function PUT(
 
     return NextResponse.json(updated);
   } catch (err) {
-    console.error("PUT /api/training/lessons/:id/publish error:", err);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Publish lesson", err);
   }
 }

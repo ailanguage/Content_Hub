@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { users } from "@/db/schema";
 import { getAuthFromCookies, hashPassword, verifyPassword } from "@/lib/auth";
 import { eq } from "drizzle-orm";
+import { apiError } from "@/lib/api-error";
 
 export async function POST(req: NextRequest) {
   try {
@@ -57,10 +58,6 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ message: "Password updated successfully" });
   } catch (error) {
-    console.error("Change password error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Change password", error);
   }
 }

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAuthFromCookies } from "@/lib/auth";
 import { isOssConfigured, generatePresignedPutUrl } from "@/lib/oss";
 import crypto from "crypto";
+import { apiError } from "@/lib/api-error";
 
 const ALLOWED_TYPES = [
   "image/jpeg",
@@ -86,10 +87,6 @@ export async function POST(req: NextRequest) {
       publicUrl: `https://${process.env.OSS_BUCKET_DOMAIN || ""}/${objectKey}`,
     });
   } catch (error) {
-    console.error("Presign error:", error);
-    return NextResponse.json(
-      { error: "Failed to generate upload URL" },
-      { status: 500 }
-    );
+    return apiError("Generate presigned URL", error);
   }
 }

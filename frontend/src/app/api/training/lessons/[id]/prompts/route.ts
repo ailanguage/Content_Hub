@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { trainerPrompts, lessons } from "@/db/schema";
 import { getAuthFromCookies } from "@/lib/auth";
 import { eq, sql, asc } from "drizzle-orm";
+import { apiError } from "@/lib/api-error";
 
 // POST /api/training/lessons/:id/prompts — create a trainer prompt
 export async function POST(
@@ -48,11 +49,7 @@ export async function POST(
 
     return NextResponse.json(newPrompt, { status: 201 });
   } catch (err) {
-    console.error("POST prompts error:", err);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Create prompt", err);
   }
 }
 
@@ -89,10 +86,6 @@ export async function PUT(
 
     return NextResponse.json(updated);
   } catch (err) {
-    console.error("PUT prompts reorder error:", err);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Reorder prompts", err);
   }
 }

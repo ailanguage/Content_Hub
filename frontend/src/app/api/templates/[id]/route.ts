@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { taskTemplates } from "@/db/schema";
 import { getAuthFromCookies } from "@/lib/auth";
+import { apiError } from "@/lib/api-error";
 import { eq } from "drizzle-orm";
 
 // PATCH /api/templates/[id] — update template
@@ -46,8 +47,8 @@ export async function PATCH(
     }
 
     return NextResponse.json({ template: updated });
-  } catch {
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  } catch (error) {
+    return apiError("Update template", error);
   }
 }
 
@@ -74,7 +75,7 @@ export async function DELETE(
     }
 
     return NextResponse.json({ success: true });
-  } catch {
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  } catch (error) {
+    return apiError("Delete template", error);
   }
 }

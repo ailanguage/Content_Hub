@@ -4,6 +4,7 @@ import { notifications } from "@/db/schema";
 import { getAuthFromCookies } from "@/lib/auth";
 import { eq, and, isNull, desc, sql } from "drizzle-orm";
 import { publishNotification } from "@/lib/ws-publish";
+import { apiError } from "@/lib/api-error";
 
 // GET /api/notifications — list user's notifications
 export async function GET(req: NextRequest) {
@@ -41,11 +42,7 @@ export async function GET(req: NextRequest) {
       unreadCount: unreadCount.count,
     });
   } catch (error) {
-    console.error("List notifications error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("List notifications", error);
   }
 }
 
@@ -86,10 +83,6 @@ export async function PATCH(req: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Mark notifications read error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Mark notifications read", error);
   }
 }

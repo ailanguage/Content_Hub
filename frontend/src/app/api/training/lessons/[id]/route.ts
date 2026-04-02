@@ -10,6 +10,7 @@ import {
 } from "@/db/schema";
 import { getAuthFromCookies } from "@/lib/auth";
 import { eq, asc, and, sql } from "drizzle-orm";
+import { apiError } from "@/lib/api-error";
 
 // GET /api/training/lessons/:id — full lesson detail
 export async function GET(
@@ -105,11 +106,7 @@ export async function GET(
       },
     });
   } catch (err) {
-    console.error("GET /api/training/lessons/:id error:", err);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Fetch lesson", err);
   }
 }
 
@@ -164,11 +161,7 @@ export async function PUT(
 
     return NextResponse.json(updated);
   } catch (err) {
-    console.error("PUT /api/training/lessons/:id error:", err);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Update lesson", err);
   }
 }
 
@@ -204,10 +197,6 @@ export async function DELETE(
     await db.delete(lessons).where(eq(lessons.id, id));
     return NextResponse.json({ deleted: true });
   } catch (err) {
-    console.error("DELETE /api/training/lessons/:id error:", err);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Delete lesson", err);
   }
 }

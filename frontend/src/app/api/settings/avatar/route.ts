@@ -5,6 +5,7 @@ import { getAuthFromCookies } from "@/lib/auth";
 import { eq } from "drizzle-orm";
 import { writeFile, unlink } from "fs/promises";
 import path from "path";
+import { apiError } from "@/lib/api-error";
 
 const MAX_SIZE = 2 * 1024 * 1024; // 2 MB
 
@@ -62,8 +63,7 @@ export async function POST(req: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("Avatar upload error:", error);
-    return NextResponse.json({ error: "Upload failed" }, { status: 500 });
+    return apiError("Upload avatar", error);
   }
 }
 
@@ -92,7 +92,6 @@ export async function DELETE() {
 
     return NextResponse.json({ ok: true });
   } catch (error) {
-    console.error("Avatar delete error:", error);
-    return NextResponse.json({ error: "Delete failed" }, { status: 500 });
+    return apiError("Delete avatar", error);
   }
 }

@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { testQuestions } from "@/db/schema";
 import { getAuthFromCookies } from "@/lib/auth";
 import { eq } from "drizzle-orm";
+import { apiError } from "@/lib/api-error";
 
 // PUT /api/training/questions/:id — update a test question
 export async function PUT(
@@ -42,11 +43,7 @@ export async function PUT(
 
     return NextResponse.json(updated);
   } catch (err) {
-    console.error("PUT question error:", err);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Update question", err);
   }
 }
 
@@ -65,10 +62,6 @@ export async function DELETE(
     await db.delete(testQuestions).where(eq(testQuestions.id, id));
     return NextResponse.json({ deleted: true });
   } catch (err) {
-    console.error("DELETE question error:", err);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Delete question", err);
   }
 }

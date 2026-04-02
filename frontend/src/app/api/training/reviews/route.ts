@@ -10,6 +10,7 @@ import {
 } from "@/db/schema";
 import { getAuthFromCookies } from "@/lib/auth";
 import { eq, and, sql, desc } from "drizzle-orm";
+import { apiError } from "@/lib/api-error";
 
 // GET /api/training/reviews — list upload submissions for review
 export async function GET(req: NextRequest) {
@@ -158,10 +159,6 @@ export async function GET(req: NextRequest) {
       },
     });
   } catch (err) {
-    console.error("GET /api/training/reviews error:", err);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("List upload reviews", err);
   }
 }

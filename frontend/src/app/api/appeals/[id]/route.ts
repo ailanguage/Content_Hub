@@ -12,6 +12,7 @@ import {
 import { getAuthFromCookies } from "@/lib/auth";
 import { eq } from "drizzle-orm";
 import { publishMessage, publishNotification, publishTaskUpdate } from "@/lib/ws-publish";
+import { apiError } from "@/lib/api-error";
 
 /**
  * PATCH /api/appeals/[id] — Resolve an appeal (grant or deny)
@@ -274,10 +275,6 @@ export async function PATCH(
 
     return NextResponse.json({ success: true, status: newStatus });
   } catch (error) {
-    console.error("Resolve appeal error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Resolve appeal", error);
   }
 }

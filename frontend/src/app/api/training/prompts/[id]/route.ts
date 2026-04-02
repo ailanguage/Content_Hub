@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { trainerPrompts } from "@/db/schema";
 import { getAuthFromCookies } from "@/lib/auth";
 import { eq } from "drizzle-orm";
+import { apiError } from "@/lib/api-error";
 
 // PUT /api/training/prompts/:id — update prompt content/resources
 export async function PUT(
@@ -35,11 +36,7 @@ export async function PUT(
 
     return NextResponse.json(updated);
   } catch (err) {
-    console.error("PUT prompt error:", err);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Update prompt", err);
   }
 }
 
@@ -58,10 +55,6 @@ export async function DELETE(
     await db.delete(trainerPrompts).where(eq(trainerPrompts.id, id));
     return NextResponse.json({ deleted: true });
   } catch (err) {
-    console.error("DELETE prompt error:", err);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Delete prompt", err);
   }
 }

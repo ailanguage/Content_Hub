@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { taskTemplates } from "@/db/schema";
 import { getAuthFromCookies } from "@/lib/auth";
+import { apiError } from "@/lib/api-error";
 import { sql } from "drizzle-orm";
 import type { SlotType } from "@/types/deliverable-slot";
 
@@ -139,8 +140,8 @@ export async function DELETE() {
       .returning();
 
     return NextResponse.json({ templates: created, reseeded: true });
-  } catch {
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  } catch (error) {
+    return apiError("Reset and reseed templates", error);
   }
 }
 
@@ -172,7 +173,7 @@ export async function POST() {
       .returning();
 
     return NextResponse.json({ templates: created, seeded: true }, { status: 201 });
-  } catch {
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  } catch (error) {
+    return apiError("Seed default templates", error);
   }
 }

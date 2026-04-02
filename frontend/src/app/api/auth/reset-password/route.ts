@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { users, passwordResetTokens, sessions } from "@/db/schema";
 import { eq, and, isNull } from "drizzle-orm";
 import { hashPassword } from "@/lib/auth";
+import { apiError } from "@/lib/api-error";
 
 export async function POST(req: NextRequest) {
   try {
@@ -72,10 +73,6 @@ export async function POST(req: NextRequest) {
       message: "Password has been reset successfully. Please log in with your new password.",
     });
   } catch (error) {
-    console.error("Reset password error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Reset password", error);
   }
 }

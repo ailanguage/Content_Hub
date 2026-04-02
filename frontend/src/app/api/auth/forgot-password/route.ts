@@ -4,6 +4,7 @@ import { users, passwordResetTokens } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { sendPasswordResetEmail } from "@/lib/email";
 import crypto from "crypto";
+import { apiError } from "@/lib/api-error";
 
 export async function POST(req: NextRequest) {
   try {
@@ -48,10 +49,6 @@ export async function POST(req: NextRequest) {
 
     return successResponse;
   } catch (error) {
-    console.error("Forgot password error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Request password reset", error);
   }
 }

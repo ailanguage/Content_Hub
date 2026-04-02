@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { channels, channelMods, users, userTags } from "@/db/schema";
 import { getAuthFromCookies } from "@/lib/auth";
+import { apiError } from "@/lib/api-error";
 import { eq } from "drizzle-orm";
 
 // Get users who have the channel's required tag + assigned mods/supermods
@@ -67,10 +68,6 @@ export async function GET(
       tagId: channel.requiredTagId,
     });
   } catch (error) {
-    console.error("Channel members error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Fetch channel members", error);
   }
 }

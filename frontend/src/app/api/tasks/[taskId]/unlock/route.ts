@@ -4,6 +4,7 @@ import { tasks, users, channels, messages } from "@/db/schema";
 import { getAuthFromCookies } from "@/lib/auth";
 import { eq } from "drizzle-orm";
 import { publishSystemMessage, publishTaskUpdate } from "@/lib/ws-publish";
+import { apiError } from "@/lib/api-error";
 
 /**
  * POST /api/tasks/[taskId]/unlock — Manually unlock a locked task back to active.
@@ -95,7 +96,6 @@ export async function POST(
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Unlock task error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return apiError("Unlock task", error);
   }
 }

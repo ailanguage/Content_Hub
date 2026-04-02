@@ -3,6 +3,7 @@ import { getAuthFromCookies } from "@/lib/auth";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import crypto from "crypto";
+import { apiError } from "@/lib/api-error";
 
 const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100 MB for local fallback
 
@@ -59,10 +60,6 @@ export async function POST(req: NextRequest) {
       size: file.size,
     });
   } catch (error) {
-    console.error("Local upload error:", error);
-    return NextResponse.json(
-      { error: "Upload failed" },
-      { status: 500 }
-    );
+    return apiError("Upload file locally", error);
   }
 }

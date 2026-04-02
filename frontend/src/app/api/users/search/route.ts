@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { users } from "@/db/schema";
 import { getAuthFromCookies } from "@/lib/auth";
 import { sql, and, ne } from "drizzle-orm";
+import { apiError } from "@/lib/api-error";
 
 export async function GET(req: NextRequest) {
   try {
@@ -39,7 +40,6 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ users: results });
   } catch (error) {
-    console.error("User search error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return apiError("Search users", error);
   }
 }

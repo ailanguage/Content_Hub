@@ -14,6 +14,7 @@ import { getAuthFromCookies } from "@/lib/auth";
 import { eq, and, ne } from "drizzle-orm";
 import { publishSystemMessage, publishTaskUpdate, publishNotification, publishWalletUpdate } from "@/lib/ws-publish";
 import { webhookTaskCompleted } from "@/lib/backend-webhook";
+import { apiError } from "@/lib/api-error";
 
 // PATCH /api/tasks/[taskId]/attempts/[attemptId] — review an attempt (mod/supermod/admin)
 export async function PATCH(
@@ -352,11 +353,7 @@ export async function PATCH(
 
     return NextResponse.json({ attempt: updatedAttempt });
   } catch (error) {
-    console.error("Review attempt error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Review attempt", error);
   }
 }
 
@@ -413,11 +410,7 @@ export async function PUT(
 
     return NextResponse.json({ attempt: updated });
   } catch (error) {
-    console.error("Edit attempt error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Edit attempt", error);
   }
 }
 
@@ -461,10 +454,6 @@ export async function DELETE(
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Delete attempt error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Delete attempt", error);
   }
 }

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { channels, channelMods, tags } from "@/db/schema";
 import { getAuthFromCookies } from "@/lib/auth";
+import { apiError } from "@/lib/api-error";
 import { eq } from "drizzle-orm";
 
 // POST /api/admin/channels — create a new channel (admin only)
@@ -95,10 +96,6 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ channel: newChannel }, { status: 201 });
   } catch (error) {
-    console.error("Create channel error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return apiError("Create channel", error);
   }
 }
