@@ -8,8 +8,11 @@ const OSS_BUCKET_DOMAIN =
   process.env.OSS_BUCKET_DOMAIN ||
   `${OSS_BUCKET}.${OSS_REGION}.aliyuncs.com`;
 
-/** Region without the "oss-" prefix, used in V4 credential scopes. */
-const SIGNING_REGION = OSS_REGION.replace(/^oss-/, "");
+/** Region without the "oss-" prefix, used in V4 credential scopes.
+ *  When using acceleration endpoints (oss-accelerate), the signing region
+ *  must still be the real bucket region (e.g. cn-beijing), not "accelerate". */
+const SIGNING_REGION =
+  process.env.OSS_SIGNING_REGION || OSS_REGION.replace(/^oss-/, "");
 
 export function isOssConfigured(): boolean {
   return !!(OSS_BUCKET && OSS_ACCESS_KEY_ID && OSS_ACCESS_KEY_SECRET);
